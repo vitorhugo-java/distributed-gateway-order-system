@@ -25,3 +25,33 @@ replay_pid*
 /.gradle/
 /.idea/
 /build/
+
+# Environment & Secrets (AIOX)
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+
+# Dependencies (AIOX)
+node_modules/
+node_modules
+
+# Build & Logs (AIOX)
+dist/
+logs/
+
+# IDE & OS (AIOX)
+.DS_Store
+Thumbs.db
+*.swp
+
+# AIOX Local (AIOX)
+.aiox-core/local/
+.claude/settings.local.json
+.aiox/install-log.txt
+/.antigravity/
+/.claude/
+/.codex/
+/.cursor/
+/.aiox-core/
