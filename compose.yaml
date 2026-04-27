@@ -23,6 +23,39 @@ services:
       - infra_network
       - ordersystem_network
 
+  api-auth:
+    build:
+      context: ./api-01-auth-gateway
+      dockerfile: Dockerfile
+    container_name: api-auth-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/ordersystem_auth_db
+      - API_ORDERS_URL=http://api-orders:8081
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - ordersystem_network
+
+  api-orders:
+    build:
+      context: ./api-02-orders-crud
+      dockerfile: Dockerfile
+    container_name: api-orders-crud
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/ordersystem_orders_db
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - ordersystem_network
+
 volumes:
   postgres_data:
     name: postgres_data
