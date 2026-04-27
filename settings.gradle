@@ -1,0 +1,4 @@
+rootProject.name = 'distributed-gateway-order-system'
+
+include 'api-01-auth-gateway'
+include 'api-02-orders-crud'

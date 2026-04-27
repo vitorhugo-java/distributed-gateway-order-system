@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Gradle Imported" enabled="true">
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.46/a5cfe99fdf320e84955ef653f2ce1bf789d11385/lombok-1.18.46.jar" />
+        </processorPath>
+        <module name="distributed-gateway-order-system.api-02-orders-crud.main" />
+        <module name="distributed-gateway-order-system.api-01-auth-gateway.main" />
+        <module name="distributed-gateway-order-system.api-02-orders-crud.test" />
+        <module name="distributed-gateway-order-system.api-01-auth-gateway.test" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel target="21" />
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="distributed-gateway-order-system.api-01-auth-gateway" options="-parameters" />
+      <module name="distributed-gateway-order-system.api-01-auth-gateway.aot" options="-parameters" />
+      <module name="distributed-gateway-order-system.api-01-auth-gateway.aotTest" options="-parameters" />
+      <module name="distributed-gateway-order-system.api-01-auth-gateway.main" options="-parameters" />
+      <module name="distributed-gateway-order-system.api-01-auth-gateway.test" options="-parameters" />
+      <module name="distributed-gateway-order-system.api-02-orders-crud" options="-parameters" />
+      <module name="distributed-gateway-order-system.api-02-orders-crud.aot" options="-parameters" />
+      <module name="distributed-gateway-order-system.api-02-orders-crud.aotTest" options="-parameters" />
+      <module name="distributed-gateway-order-system.api-02-orders-crud.main" options="-parameters" />
+      <module name="distributed-gateway-order-system.api-02-orders-crud.test" options="-parameters" />
+    </option>
+  </component>
+</project>
