@@ -1,4 +1,4 @@
-package com.order.api01authgateway.util;
+package com.order.api01authgateway.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

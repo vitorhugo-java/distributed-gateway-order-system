@@ -1,4 +1,4 @@
-package com.order.api01authgateway.util;
+package com.order.api01authgateway.config;
 
 import com.order.api01authgateway.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
