@@ -1,5 +1,8 @@
 package com.order.api01authgateway.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -15,10 +18,16 @@ import reactor.core.publisher.Mono;
 @RestController
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
+@Tag(name = "Orders Proxy", description = "Routing to the Orders API")
 public class OrderProxyController {
 
     private final WebClient webClient;
 
+    @Operation(
+        summary = "Dynamic proxy for Orders", 
+        description = "Forwards all requests to the Orders microservice encapsulating the JWT", 
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
     @RequestMapping("/**")
     public Mono<ResponseEntity<byte[]>> proxy(
             HttpServletRequest request,
