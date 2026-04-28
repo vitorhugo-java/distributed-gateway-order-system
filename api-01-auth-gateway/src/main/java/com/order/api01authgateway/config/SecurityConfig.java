@@ -1,4 +1,4 @@
-package com.order.api01authgateway.security;
+package com.order.api01authgateway.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
