@@ -25,6 +25,15 @@ application:
   gateway:
     downstream-url: http://localhost:8081
 
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: alpha
+    tags-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+  show-actuator: true
+
 server:
   port: 8080
 
