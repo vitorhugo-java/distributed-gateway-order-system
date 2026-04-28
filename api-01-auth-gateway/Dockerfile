@@ -6,18 +6,14 @@ COPY gradle gradle
 COPY build.gradle .
 COPY settings.gradle .
 
-COPY src src
+COPY api-01-auth-gateway/ api-01-auth-gateway/
+COPY api-02-orders-crud/ api-02-orders-crud/
 
-RUN ./gradlew bootJar -x test
+RUN ./gradlew :api-01-auth-gateway:bootJar -x test
 
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
-
-RUN addgroup -S spring && adduser -S spring -G spring
-USER spring:spring
-
-COPY --from=build /app/build/libs/*.jar app.jar
+COPY --from=build /app/api-01-auth-gateway/build/libs/*.jar app.jar
 
 EXPOSE 8080
-
 ENTRYPOINT ["java", "-jar", "app.jar"]

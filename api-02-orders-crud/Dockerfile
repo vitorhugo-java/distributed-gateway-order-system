@@ -1,23 +1,19 @@
 FROM gradle:8.10-jdk21-alpine AS build
 WORKDIR /app
 
-COPY ../gradlew .
-COPY ../gradle gradle
-COPY ../build.gradle .
-COPY ../settings.gradle .
+COPY gradlew .
+COPY gradle gradle
+COPY build.gradle .
+COPY settings.gradle .
 
-COPY src src
+COPY api-01-auth-gateway/ api-01-auth-gateway/
+COPY api-02-orders-crud/ api-02-orders-crud/
 
-RUN ./gradlew bootJar -x test
+RUN ./gradlew :api-02-orders-crud:bootJar -x test
 
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
+COPY --from=build /app/api-02-orders-crud/build/libs/*.jar app.jar
 
-RUN addgroup -S spring && adduser -S spring -G spring
-USER spring:spring
-
-COPY --from=build /app/build/libs/*.jar app.jar
-
-EXPOSE 8080
-
+EXPOSE 8081
 ENTRYPOINT ["java", "-jar", "app.jar"]

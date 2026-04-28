@@ -24,8 +24,8 @@ services:
 
   api-auth:
     build:
-      context: ./api-01-auth-gateway
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: api-01-auth-gateway/Dockerfile
     container_name: api-auth-gateway
     ports:
       - "8080:8080"
@@ -33,6 +33,8 @@ services:
       - SPRING_PROFILES_ACTIVE=prod
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/ordersystem_auth_db
       - API_ORDERS_URL=http://api-orders:8081
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
     depends_on:
       postgres:
         condition: service_healthy
@@ -41,14 +43,16 @@ services:
 
   api-orders:
     build:
-      context: ./api-02-orders-crud
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: api-02-orders-crud/Dockerfile
     container_name: api-orders-crud
     ports:
       - "8081:8081"
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/ordersystem_orders_db
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
     depends_on:
       postgres:
         condition: service_healthy
