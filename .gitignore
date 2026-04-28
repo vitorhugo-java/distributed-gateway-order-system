@@ -56,3 +56,4 @@ Thumbs.db
 /.cursor/
 /.aiox-core/
 /.aiox
+.vscode/settings.json
