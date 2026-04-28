@@ -6,3 +6,4 @@ spring:
   docker:
     compose:
       lifecycle-management: none
+      enabled: false
