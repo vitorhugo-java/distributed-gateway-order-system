@@ -1,0 +1,1 @@
+INSERT INTO users (use_name, use_password, use_email, use_created_at, use_updated_at) VALUES ('admin', '$2a$12$bTY3RxpedkAa9pfKz1xtGOp21dbSjzCLlo0vD60gIq4CwPJHZTGJe', 'admin@example.com', NOW(), NOW());
