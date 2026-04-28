@@ -6,7 +6,17 @@
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-blue?style=for-the-badge&logo=postgresql)
 ![Gradle](https://img.shields.io/badge/Gradle-8.10-02303A?style=for-the-badge&logo=gradle)
 
+## 🚀 Overview
+
+This project implements a robust, distributed architecture for an Order Management System, built with **Java 21** and **Spring Boot 4**. It adopts a microservices approach, utilizing an Auth Gateway pattern to handle security at the edge. 
+
 A high-performance, distributed ecosystem designed for secure order management. This project features a robust **API Gateway** using a manual **WebClient** proxy pattern to ensure centralized authentication and seamless service orchestration.
+
+Key architectural highlights include:
+* **Zero-Trust Edge Security:** Stateless JWT authentication and manual proxy routing via Spring WebFlux `WebClient`.
+* **High Performance:** Optimized for cloud-native deployment using **GraalVM Native Image**, significantly reducing startup time and memory footprint.
+* **Modern Persistence:** Powered by **PostgreSQL 17**, utilizing time-ordered `UUID v7` for optimal B-Tree index performance and anti-fragmentation.
+* **Automated Lifecycle:** Full CI/CD pipeline orchestrated with GitHub Actions for testing, native image building (GHCR), and automated SSH deployments.
 
 ---
 
