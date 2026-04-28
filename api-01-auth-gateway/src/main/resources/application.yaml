@@ -27,6 +27,11 @@ application:
 
 springdoc:
   swagger-ui:
+    urls:
+      - name: "01 - Authentication"
+        url: /v3/api-docs
+      - name: "02 - Orders Management"
+        url: /api/orders/v3/api-docs
     path: /swagger-ui.html
     operations-sorter: alpha
     tags-sorter: alpha
