@@ -1,0 +1,4 @@
+springdoc:
+  querydsl:
+    enabled: false
+  show-actuator: false
