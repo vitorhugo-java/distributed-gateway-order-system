@@ -1,5 +1,6 @@
 package com.order.api01authgateway.config;
 
+import com.order.api01authgateway.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
