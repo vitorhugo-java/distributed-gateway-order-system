@@ -15,9 +15,19 @@ subprojects {
     apply plugin: 'io.spring.dependency-management'
     apply plugin: 'org.hibernate.orm'
     apply plugin: 'org.graalvm.buildtools.native'
+    apply plugin: 'jacoco'
 
     group = 'com.order'
     version = '0.0.1-SNAPSHOT'
+
+    def excludedPatterns = [
+            "**/config/*",
+            "**/dto/*",
+            "**/entity/*",
+            "**/exception/*",
+            "**/*Application*",
+            "**/*ServletInitializer*"
+    ]
 
     java {
         toolchain {
@@ -27,6 +37,10 @@ subprojects {
 
     repositories {
         mavenCentral()
+    }
+
+    jacoco {
+        toolVersion = "0.8.12"
     }
 
     dependencies {
@@ -45,11 +59,10 @@ subprojects {
         developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
         // Database Runtimes
-        runtimeOnly 'com.h2database:h2'
         runtimeOnly 'org.postgresql:postgresql'
         providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat-runtime'
 
-        // Testes Comuns
+        // Tests
         testImplementation 'org.springframework.boot:spring-boot-starter-test'
         testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
         testImplementation 'org.springframework.boot:spring-boot-starter-flyway-test'
@@ -58,6 +71,7 @@ subprojects {
         testCompileOnly 'org.projectlombok:lombok'
         testAnnotationProcessor 'org.projectlombok:lombok'
         testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+        testRuntimeOnly 'com.h2database:h2'
     }
 
     hibernate {
@@ -68,9 +82,20 @@ subprojects {
 
     tasks.named('test') {
         useJUnitPlatform()
+        finalizedBy jacocoTestReport
+    }
+
+    jacocoTestReport {
+        dependsOn test
+        afterEvaluate {
+            classDirectories.setFrom(files(classDirectories.files.collect {
+                fileTree(dir: it, exclude: excludedPatterns)
+            }))
+        }
     }
 
     jacocoTestCoverageVerification {
+        dependsOn jacocoTestReport
         violationRules {
             rule {
                 limit {
@@ -85,31 +110,5 @@ subprojects {
         }
     }
 
-    def excludedPatterns = [
-            "**/config/*",
-            "**/dto/*",
-            "**/entity/*",
-            "**/exception/*",
-            "**/*Application*",
-            "**/*ServletInitializer*"
-    ]
-
-    jacocoTestReport {
-        dependsOn test
-        afterEvaluate {
-            classDirectories.setFrom(files(classDirectories.files.collect {
-                fileTree(dir: it, exclude: excludedPatterns)
-            }))
-        }
-    }
+    check.dependsOn jacocoTestCoverageVerification
 }
-
-jacoco {
-    toolVersion = "0.8.12"
-}
-
-test {
-    finalizedBy jacocoTestReport
-}
-
-check.dependsOn jacocoTestCoverageVerification
