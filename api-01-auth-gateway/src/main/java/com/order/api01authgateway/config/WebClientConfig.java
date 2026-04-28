@@ -10,12 +10,24 @@ import reactor.netty.http.client.HttpClient;
 
 import java.time.Duration;
 
+/**
+ * Configuration class for setting up resilient {@link WebClient} instances.
+ * <p>
+ * Defines connectivity parameters, including connection and response timeouts, as well as
+ * buffer capacity limits to ensure system stability when communicating with downstream services.
+ * </p>
+ */
 @Configuration
 public class WebClientConfig {
 
     @Value("${application.gateway.downstream-url}")
     private String downstreamUrl;
 
+    /**
+     * Creates and configures a {@link WebClient} bean with predefined resilience settings.
+     *
+     * @return A configured {@link WebClient} instance.
+     */
     @Bean
     public WebClient webClient() {
         HttpClient httpClient = HttpClient.create()

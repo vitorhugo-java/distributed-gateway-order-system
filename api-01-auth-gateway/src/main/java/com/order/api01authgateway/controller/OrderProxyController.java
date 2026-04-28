@@ -25,7 +25,7 @@ public class OrderProxyController {
 
     @Operation(
         summary = "Dynamic proxy for Orders", 
-        description = "Forwards all requests to the Orders microservice encapsulating the JWT", 
+        description = "Forwards all requests to the Orders microservice encapsulating the JWT",
         security = @SecurityRequirement(name = "bearerAuth")
     )
     @RequestMapping("/**")

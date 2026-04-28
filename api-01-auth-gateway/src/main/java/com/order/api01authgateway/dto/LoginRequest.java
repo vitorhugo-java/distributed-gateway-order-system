@@ -6,9 +6,9 @@ import jakarta.validation.constraints.NotBlank;
 
 @Schema(description = "User authentication payload")
 public record LoginRequest(
-    @Schema(description = "Registered email", example = "admin@cotefacil.com")
+    @Schema(description = "Registered email", example = "admin@example.com")
     @NotBlank @Email String email,
     
-    @Schema(description = "User password", example = "strongPassword123")
+    @Schema(description = "User password", example = "admin123")
     @NotBlank String password
 ) {}
