@@ -3,7 +3,10 @@ package com.order.api01authgateway.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -17,15 +20,26 @@ public class OrderProxyController {
     private final WebClient webClient;
 
     @RequestMapping("/**")
-    public Mono<ResponseEntity<byte[]>> proxy(HttpServletRequest request) {
-        String path = request.getRequestURI().replace("/api/orders", "");
-        String query = request.getQueryString() != null ? "?" + request.getQueryString() : "";
-        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+    public Mono<ResponseEntity<byte[]>> proxy(
+            HttpServletRequest request,
+            @RequestHeader HttpHeaders headers,
+            @RequestBody(required = false) byte[] body) {
 
-        return webClient.method(org.springframework.http.HttpMethod.valueOf(request.getMethod()))
+        String path = request.getRequestURI().replaceFirst("^/api/orders", "");
+        String query = request.getQueryString() != null ? "?" + request.getQueryString() : "";
+
+        WebClient.RequestBodySpec bodySpec = webClient
+                .method(HttpMethod.valueOf(request.getMethod()))
                 .uri(path + query)
-                .header(HttpHeaders.AUTHORIZATION, authHeader)
-                .retrieve()
-                .toEntity(byte[].class);
+                .headers(httpHeaders -> {
+                    httpHeaders.addAll(headers);
+                    httpHeaders.remove(HttpHeaders.HOST);
+                });
+
+        if (body != null) {
+            return bodySpec.bodyValue(body).exchangeToMono(response -> response.toEntity(byte[].class));
+        } else {
+            return bodySpec.exchangeToMono(response -> response.toEntity(byte[].class));
+        }
     }
 }
