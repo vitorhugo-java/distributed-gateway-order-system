@@ -40,6 +40,7 @@ node_modules
 # Build & Logs (AIOX)
 dist/
 logs/
+!gradle/wrapper/gradle-wrapper.jar
 
 # IDE & OS (AIOX)
 .DS_Store
