@@ -1,0 +1,89 @@
+name: Deploy Everything (Docs, Tests, Coverage)
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build Reports (Resilient)
+        continue-on-error: true
+        run: |
+          ./gradlew :api-01-auth-gateway:test :api-01-auth-gateway:jacocoTestReport :api-01-auth-gateway:javadoc \
+                    :api-02-orders-crud:test :api-02-orders-crud:jacocoTestReport :api-02-orders-crud:javadoc --no-daemon
+
+      - name: Organize Reports
+        run: |
+          rm -rf public-site
+          mkdir -p public-site/auth-gateway/docs public-site/auth-gateway/tests public-site/auth-gateway/coverage
+          mkdir -p public-site/order-system/docs public-site/order-system/tests public-site/order-system/coverage
+
+          # Organize Auth Gateway
+          cp -r api-01-auth-gateway/build/docs/javadoc/* public-site/auth-gateway/docs/ || true
+          cp -r api-01-auth-gateway/build/reports/tests/test/* public-site/auth-gateway/tests/ || true
+          cp -r api-01-auth-gateway/build/reports/jacoco/test/html/* public-site/auth-gateway/coverage/ || true
+
+          # Organize Order System
+          cp -r api-02-orders-crud/build/docs/javadoc/* public-site/order-system/docs/ || true
+          cp -r api-02-orders-crud/build/reports/tests/test/* public-site/order-system/tests/ || true
+          cp -r api-02-orders-crud/build/reports/jacoco/test/html/* public-site/order-system/coverage/ || true
+
+      - name: Generate Dashboard
+        run: |
+          cat <<EOF > public-site/index.html
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+              <meta charset="UTF-8">
+              <title>Project Dashboard</title>
+              <style>
+                  body { font-family: sans-serif; background-color: #121212; color: #e0e0e0; padding: 2rem; }
+                  h1 { border-bottom: 1px solid #333; padding-bottom: 1rem; }
+                  .module { margin-bottom: 2rem; border: 1px solid #333; padding: 1rem; border-radius: 8px; }
+                  a { color: #bb86fc; text-decoration: none; display: inline-block; margin-right: 1rem; }
+                  a:hover { text-decoration: underline; }
+              </style>
+          </head>
+          <body>
+              <h1>Project Dashboard</h1>
+              
+              <div class="module">
+                  <h2>Auth Gateway</h2>
+                  <a href="auth-gateway/docs/index.html">Documentation</a>
+                  <a href="auth-gateway/tests/index.html">Test Reports</a>
+                  <a href="auth-gateway/coverage/index.html">Coverage</a>
+              </div>
+
+              <div class="module">
+                  <h2>Order System</h2>
+                  <a href="order-system/docs/index.html">Documentation</a>
+                  <a href="order-system/tests/index.html">Test Reports</a>
+                  <a href="order-system/coverage/index.html">Coverage</a>
+              </div>
+          </body>
+          </html>
+          EOF
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public-site

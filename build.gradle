@@ -5,6 +5,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.7' apply false
     id 'org.hibernate.orm' version '7.2.12.Final' apply false
     id 'org.graalvm.buildtools.native' version '0.11.5' apply false
+    id 'jacoco'
 }
 
 subprojects {
@@ -68,4 +69,47 @@ subprojects {
     tasks.named('test') {
         useJUnitPlatform()
     }
+
+    jacocoTestCoverageVerification {
+        violationRules {
+            rule {
+                limit {
+                    minimum = 0.7
+                }
+            }
+        }
+        afterEvaluate {
+            classDirectories.setFrom(files(classDirectories.files.collect {
+                fileTree(dir: it, exclude: excludedPatterns)
+            }))
+        }
+    }
+
+    def excludedPatterns = [
+            "**/config/*",
+            "**/dto/*",
+            "**/entity/*",
+            "**/exception/*",
+            "**/*Application*",
+            "**/*ServletInitializer*"
+    ]
+
+    jacocoTestReport {
+        dependsOn test
+        afterEvaluate {
+            classDirectories.setFrom(files(classDirectories.files.collect {
+                fileTree(dir: it, exclude: excludedPatterns)
+            }))
+        }
+    }
 }
+
+jacoco {
+    toolVersion = "0.8.12"
+}
+
+test {
+    finalizedBy jacocoTestReport
+}
+
+check.dependsOn jacocoTestCoverageVerification
