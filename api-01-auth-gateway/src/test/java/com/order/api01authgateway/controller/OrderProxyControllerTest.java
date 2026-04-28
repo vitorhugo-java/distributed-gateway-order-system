@@ -24,8 +24,6 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class OrderProxyControllerTest {
 
-    private MockMvc mockMvc;
-
     @Mock
     private WebClient webClient;
 
@@ -36,7 +34,7 @@ class OrderProxyControllerTest {
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(orderProxyController).build();
+        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(orderProxyController).build();
         webTestClient = MockMvcWebTestClient.bindTo(mockMvc).build();
     }
 
