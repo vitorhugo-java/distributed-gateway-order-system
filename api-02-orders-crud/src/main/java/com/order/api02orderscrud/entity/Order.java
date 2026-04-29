@@ -11,9 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * Entidade que representa um pedido no sistema.
- */
 @Setter
 @Getter
 @Entity
@@ -46,29 +43,18 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> items = new ArrayList<>();
 
-    /**
-     * Adiciona um item ao pedido e atualiza o total.
-     * @param item item a ser adicionado
-     */
     public void addItem(OrderItem item) {
         items.add(item);
         item.setOrder(this);
         recalculateTotal();
     }
 
-    /**
-     * Remove um item do pedido e atualiza o total.
-     * @param item item a ser removido
-     */
     public void removeItem(OrderItem item) {
         items.remove(item);
         item.setOrder(null);
         recalculateTotal();
     }
 
-    /**
-     * Recalcula o valor total do pedido com base nos subtotais dos itens.
-     */
     public void recalculateTotal() {
         this.totalAmount = items.stream()
                 .map(OrderItem::getSubtotal)
