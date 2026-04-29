@@ -133,39 +133,3 @@ jobs:
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-  # ────────────────────────────────────────────────────────────
-  # Stage 3 — SSH Deploy
-  # ────────────────────────────────────────────────────────────
-  deploy:
-    name: Deploy via SSH
-    runs-on: ubuntu-latest
-    needs: build-publish
-    if: github.ref == 'refs/heads/main'
-    environment: production
-
-    steps:
-      - name: SSH deploy — pull image and restart service
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          script: |
-            set -euo pipefail
-
-            IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
-            COMPOSE_FILE="/docker/distributed-gateway-order-system/api-auth/docker-compose.yml"
-            COMPOSE_DIR="$(dirname "$COMPOSE_FILE")"
-
-            echo "==> Pulling latest image: $IMAGE"
-            docker pull "$IMAGE"
-
-            echo "==> Restarting api-auth service..."
-            docker compose -f "$COMPOSE_FILE" up -d --force-recreate api-auth
-
-            echo "==> Active containers:"
-            docker compose -f "$COMPOSE_FILE" ps
-
-            echo "==> Deploy complete."
