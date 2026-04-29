@@ -55,12 +55,16 @@ RUN tr -d '\r' < gradlew > gradlew.unix && mv gradlew.unix gradlew && chmod +x g
         -Porg.gradle.java.installations.auto-detect=false \
         -Porg.gradle.java.installations.paths="$JAVA_HOME"
 
-FROM gcr.io/distroless/cc-debian12 AS native
+FROM debian:bookworm-slim AS native
 WORKDIR /app
+
+RUN apt-get update && apt-get install -y zlib1g && rm -rf /var/lib/apt/lists/*
 
 COPY --from=build-native \
      /app/api-01-auth-gateway/build/native/nativeCompile/api-01-auth-gateway \
      ./app-exe
+
+RUN chmod +x ./app-exe
 
 EXPOSE 8080
 ENTRYPOINT ["./app-exe"]
