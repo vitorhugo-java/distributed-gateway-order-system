@@ -2,6 +2,7 @@ package com.order.api01authgateway.controller;
 
 import com.order.api01authgateway.security.JwtService;
 import okhttp3.mockwebserver.MockResponse;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -52,6 +53,9 @@ public class OrderProxyControllerTest {
 
     @MockitoBean
     private AuthenticationProvider authenticationProvider;
+
+    @MockitoBean
+    private UserDetailsService userDetailsService;
 
     private static MockWebServer mockWebServer;
 
