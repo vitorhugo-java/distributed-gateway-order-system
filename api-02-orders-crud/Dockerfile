@@ -1,4 +1,4 @@
-FROM ghcr.io/graalvm/native-image:21 AS build-native
+FROM ghcr.io/graalvm/native-image-community:21 AS build-native
 WORKDIR /app
 
 RUN microdnf install -y findutils && microdnf clean all
