@@ -7,23 +7,24 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.IOException;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -39,6 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @WebMvcTest(OrderProxyController.class)
 @AutoConfigureMockMvc(addFilters = false)
+@Import(OrderProxyControllerTest.OrderProxyTestConfiguration.class)
 public class OrderProxyControllerTest {
 
     @Autowired
@@ -59,8 +61,8 @@ public class OrderProxyControllerTest {
     @TestConfiguration
     static class OrderProxyTestConfiguration {
         @Bean
-        public WebClient webClient(WebClient.Builder builder) {
-            return builder.baseUrl(mockWebServer.url("/").toString()).build();
+        public WebClient webClient() {
+            return WebClient.builder().baseUrl(mockWebServer.url("/").toString()).build();
         }
     }
 
@@ -86,17 +88,6 @@ public class OrderProxyControllerTest {
     }
 
     /**
-     * Dynamically registers the {@link MockWebServer} base URL as an application property
-     * to override the downstream API endpoint for testing purposes.
-     *
-     * @param registry the dynamic property registry provided by Spring Test
-     */
-    @DynamicPropertySource
-    public static void properties(DynamicPropertyRegistry registry) {
-        registry.add("application.gateway.downstream-url", () -> mockWebServer.url("/").toString());
-    }
-
-    /**
      * Validates that incoming HTTP GET requests are correctly proxied to the
      * downstream {@link MockWebServer} and responses are returned to the user.
      *
@@ -109,8 +100,12 @@ public class OrderProxyControllerTest {
                 .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .setBody("proxied"));
 
-        mockMvc.perform(get("/api/orders/test")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer token"))
+        var mvcResult = mockMvc.perform(get("/api/orders/test")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer token"))
+            .andExpect(request().asyncStarted())
+            .andReturn();
+
+        mockMvc.perform(asyncDispatch(mvcResult))
                 .andExpect(status().isOk())
                 .andExpect(content().string("proxied"));
     }
