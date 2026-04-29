@@ -129,4 +129,6 @@ We implement stateless authentication using JWT.
     - **SSH_USERNAME**: Username for SSH authentication on the remote server.
     - **SSH_PRIVATE_KEY**: Private SSH key for authentication, stored as a GitHub secret.
     - **SSH_PORT**: Port number for SSH connection.
+    - **GHCR_USERNAME**: GitHub username.
+    - **GHCR_TOKEN**: PAT Token from your GitHub account.
 - **deploy-everything**: Deploy Docs, Tests, Coverage Reports to GitHub Pages.
