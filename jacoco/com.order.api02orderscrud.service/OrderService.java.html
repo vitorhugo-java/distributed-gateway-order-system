@@ -40,11 +40,26 @@ public class OrderService {
     }
 
     @Transactional
+    public OrderDTO update(UUID id, OrderDTO dto) {
+<span class="fc" id="L44">        Order existingOrder = orderRepository.findById(id)</span>
+<span class="fc" id="L45">                .orElseThrow(() -&gt; new EntityNotFoundException(&quot;Order not found&quot;));</span>
+
+<span class="fc" id="L47">        existingOrder.setCustomerName(dto.customerName());</span>
+<span class="fc" id="L48">        existingOrder.setCustomerEmail(dto.customerEmail());</span>
+<span class="pc bpc" id="L49" title="1 of 2 branches missed.">        existingOrder.setOrderDate(dto.orderDate() != null ? dto.orderDate() : existingOrder.getOrderDate());</span>
+<span class="fc" id="L50">        existingOrder.setStatus(dto.status());</span>
+<span class="fc" id="L51">        existingOrder.setTotalAmount(dto.totalAmount());</span>
+
+<span class="fc" id="L53">        Order updatedOrder = orderRepository.save(existingOrder);</span>
+<span class="fc" id="L54">        return orderMapper.toDto(updatedOrder);</span>
+    }
+
+    @Transactional
     public void delete(UUID id) {
-<span class="fc bfc" id="L44" title="All 2 branches covered.">        if (!orderRepository.existsById(id)) {</span>
-<span class="fc" id="L45">            throw new EntityNotFoundException(&quot;Order not found&quot;);</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">        if (!orderRepository.existsById(id)) {</span>
+<span class="fc" id="L60">            throw new EntityNotFoundException(&quot;Order not found&quot;);</span>
         }
-<span class="fc" id="L47">        orderRepository.deleteById(id);</span>
-<span class="fc" id="L48">    }</span>
+<span class="fc" id="L62">        orderRepository.deleteById(id);</span>
+<span class="fc" id="L63">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

@@ -121,9 +121,33 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>reactor.core.publisher.Mono<wbr>&lt;org.springframework.http.ResponseEntity&lt;byte[]&gt;&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#proxy(jakarta.servlet.http.HttpServletRequest,org.springframework.http.HttpHeaders,byte%5B%5D)" class="member-name-link">proxy</a><wbr>(jakarta.servlet.http.HttpServletRequest&nbsp;request,
- org.springframework.http.HttpHeaders&nbsp;headers,
- byte[]&nbsp;body)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addItem(java.util.UUID,com.order.api01authgateway.dto.OrderItemDTO,jakarta.servlet.http.HttpServletRequest)" class="member-name-link">addItem</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/UUID.html" title="class or interface in java.util" class="external-link">UUID</a>&nbsp;orderId,
+ <a href="../dto/OrderItemDTO.html" title="class in com.order.api01authgateway.dto">OrderItemDTO</a>&nbsp;dto,
+ jakarta.servlet.http.HttpServletRequest&nbsp;request)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>reactor.core.publisher.Mono<wbr>&lt;org.springframework.http.ResponseEntity&lt;byte[]&gt;&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#delete(java.util.UUID,jakarta.servlet.http.HttpServletRequest)" class="member-name-link">delete</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/UUID.html" title="class or interface in java.util" class="external-link">UUID</a>&nbsp;id,
+ jakarta.servlet.http.HttpServletRequest&nbsp;request)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>reactor.core.publisher.Mono<wbr>&lt;org.springframework.http.ResponseEntity&lt;byte[]&gt;&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#findAll(jakarta.servlet.http.HttpServletRequest)" class="member-name-link">findAll</a><wbr>(jakarta.servlet.http.HttpServletRequest&nbsp;request)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>reactor.core.publisher.Mono<wbr>&lt;org.springframework.http.ResponseEntity&lt;byte[]&gt;&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#findById(java.util.UUID,jakarta.servlet.http.HttpServletRequest)" class="member-name-link">findById</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/UUID.html" title="class or interface in java.util" class="external-link">UUID</a>&nbsp;id,
+ jakarta.servlet.http.HttpServletRequest&nbsp;request)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>reactor.core.publisher.Mono<wbr>&lt;org.springframework.http.ResponseEntity&lt;byte[]&gt;&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#findItemsByOrderId(java.util.UUID,jakarta.servlet.http.HttpServletRequest)" class="member-name-link">findItemsByOrderId</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/UUID.html" title="class or interface in java.util" class="external-link">UUID</a>&nbsp;orderId,
+ jakarta.servlet.http.HttpServletRequest&nbsp;request)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>reactor.core.publisher.Mono<wbr>&lt;org.springframework.http.ResponseEntity&lt;byte[]&gt;&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#save(com.order.api01authgateway.dto.OrderDTO,jakarta.servlet.http.HttpServletRequest)" class="member-name-link">save</a><wbr>(<a href="../dto/OrderDTO.html" title="class in com.order.api01authgateway.dto">OrderDTO</a>&nbsp;dto,
+ jakarta.servlet.http.HttpServletRequest&nbsp;request)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>reactor.core.publisher.Mono<wbr>&lt;org.springframework.http.ResponseEntity&lt;byte[]&gt;&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update(java.util.UUID,com.order.api01authgateway.dto.OrderDTO,jakarta.servlet.http.HttpServletRequest)" class="member-name-link">update</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/UUID.html" title="class or interface in java.util" class="external-link">UUID</a>&nbsp;id,
+ <a href="../dto/OrderDTO.html" title="class in com.order.api01authgateway.dto">OrderDTO</a>&nbsp;dto,
+ jakarta.servlet.http.HttpServletRequest&nbsp;request)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
@@ -157,14 +181,70 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="proxy(jakarta.servlet.http.HttpServletRequest,org.springframework.http.HttpHeaders,byte[])">
-<h3>proxy</h3>
-<div class="member-signature"><span class="annotations">@RequestMapping("/**")
-</span><span class="modifiers">public</span>&nbsp;<span class="return-type">reactor.core.publisher.Mono&lt;org.springframework.http.ResponseEntity&lt;byte[]&gt;&gt;</span>&nbsp;<span class="element-name">proxy</span><wbr><span class="parameters">(jakarta.servlet.http.HttpServletRequest&nbsp;request,
- @RequestHeader
- org.springframework.http.HttpHeaders&nbsp;headers,
- @RequestBody(required=false)
- byte[]&nbsp;body)</span></div>
+<section class="detail" id="findAll(jakarta.servlet.http.HttpServletRequest)">
+<h3>findAll</h3>
+<div class="member-signature"><span class="annotations">@GetMapping
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type">reactor.core.publisher.Mono&lt;org.springframework.http.ResponseEntity&lt;byte[]&gt;&gt;</span>&nbsp;<span class="element-name">findAll</span><wbr><span class="parameters">(jakarta.servlet.http.HttpServletRequest&nbsp;request)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="findById(java.util.UUID,jakarta.servlet.http.HttpServletRequest)">
+<h3>findById</h3>
+<div class="member-signature"><span class="annotations">@GetMapping("/{id}")
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type">reactor.core.publisher.Mono&lt;org.springframework.http.ResponseEntity&lt;byte[]&gt;&gt;</span>&nbsp;<span class="element-name">findById</span><wbr><span class="parameters">(@PathVariable
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/UUID.html" title="class or interface in java.util" class="external-link">UUID</a>&nbsp;id,
+ jakarta.servlet.http.HttpServletRequest&nbsp;request)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="save(com.order.api01authgateway.dto.OrderDTO,jakarta.servlet.http.HttpServletRequest)">
+<h3>save</h3>
+<div class="member-signature"><span class="annotations">@PostMapping
+@ResponseStatus(CREATED)
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type">reactor.core.publisher.Mono&lt;org.springframework.http.ResponseEntity&lt;byte[]&gt;&gt;</span>&nbsp;<span class="element-name">save</span><wbr><span class="parameters">(@RequestBody
+ <a href="../dto/OrderDTO.html" title="class in com.order.api01authgateway.dto">OrderDTO</a>&nbsp;dto,
+ jakarta.servlet.http.HttpServletRequest&nbsp;request)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="update(java.util.UUID,com.order.api01authgateway.dto.OrderDTO,jakarta.servlet.http.HttpServletRequest)">
+<h3>update</h3>
+<div class="member-signature"><span class="annotations">@PutMapping("/{id}")
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type">reactor.core.publisher.Mono&lt;org.springframework.http.ResponseEntity&lt;byte[]&gt;&gt;</span>&nbsp;<span class="element-name">update</span><wbr><span class="parameters">(@PathVariable
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/UUID.html" title="class or interface in java.util" class="external-link">UUID</a>&nbsp;id,
+ @RequestBody
+ <a href="../dto/OrderDTO.html" title="class in com.order.api01authgateway.dto">OrderDTO</a>&nbsp;dto,
+ jakarta.servlet.http.HttpServletRequest&nbsp;request)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="delete(java.util.UUID,jakarta.servlet.http.HttpServletRequest)">
+<h3>delete</h3>
+<div class="member-signature"><span class="annotations">@DeleteMapping("/{id}")
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type">reactor.core.publisher.Mono&lt;org.springframework.http.ResponseEntity&lt;byte[]&gt;&gt;</span>&nbsp;<span class="element-name">delete</span><wbr><span class="parameters">(@PathVariable
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/UUID.html" title="class or interface in java.util" class="external-link">UUID</a>&nbsp;id,
+ jakarta.servlet.http.HttpServletRequest&nbsp;request)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="findItemsByOrderId(java.util.UUID,jakarta.servlet.http.HttpServletRequest)">
+<h3>findItemsByOrderId</h3>
+<div class="member-signature"><span class="annotations">@GetMapping("/{orderId}/items")
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type">reactor.core.publisher.Mono&lt;org.springframework.http.ResponseEntity&lt;byte[]&gt;&gt;</span>&nbsp;<span class="element-name">findItemsByOrderId</span><wbr><span class="parameters">(@PathVariable
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/UUID.html" title="class or interface in java.util" class="external-link">UUID</a>&nbsp;orderId,
+ jakarta.servlet.http.HttpServletRequest&nbsp;request)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="addItem(java.util.UUID,com.order.api01authgateway.dto.OrderItemDTO,jakarta.servlet.http.HttpServletRequest)">
+<h3>addItem</h3>
+<div class="member-signature"><span class="annotations">@PostMapping("/{orderId}/items")
+@ResponseStatus(CREATED)
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type">reactor.core.publisher.Mono&lt;org.springframework.http.ResponseEntity&lt;byte[]&gt;&gt;</span>&nbsp;<span class="element-name">addItem</span><wbr><span class="parameters">(@PathVariable
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/UUID.html" title="class or interface in java.util" class="external-link">UUID</a>&nbsp;orderId,
+ @RequestBody
+ <a href="../dto/OrderItemDTO.html" title="class in com.order.api01authgateway.dto">OrderItemDTO</a>&nbsp;dto,
+ jakarta.servlet.http.HttpServletRequest&nbsp;request)</span></div>
 </section>
 </li>
 </ul>
