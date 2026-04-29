@@ -55,7 +55,7 @@ RUN tr -d '\r' < gradlew > gradlew.unix && mv gradlew.unix gradlew && chmod +x g
         -Porg.gradle.java.installations.auto-detect=false \
         -Porg.gradle.java.installations.paths="$JAVA_HOME"
 
-FROM gcr.io/distroless/base-nptl-debian12 AS native
+FROM gcr.io/distroless/base-debian12 AS native
 WORKDIR /app
 
 COPY --from=build-native \
