@@ -114,7 +114,6 @@ subprojects {
         binaries {
             main {
                 buildArgs.add("--enable-preview")
-                mainClass = 'com.order.api01authgateway.Api01AuthGatewayApplication'
             }
         }
     }

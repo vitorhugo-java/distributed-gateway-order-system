@@ -4,6 +4,14 @@ plugins {
 
 description = 'api-02-orders-crud'
 
+graalvmNative {
+    binaries {
+        main {
+            mainClass = 'com.order.api02orderscrud.Api02OrdersCrudApplication'
+        }
+    }
+}
+
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
