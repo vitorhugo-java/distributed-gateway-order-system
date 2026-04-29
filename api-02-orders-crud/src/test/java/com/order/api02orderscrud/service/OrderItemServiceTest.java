@@ -13,15 +13,21 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+/**
+ * <h1>OrderItemServiceTest</h1>
+ * <p>Validates business rules and failure scenarios for {@link OrderItemService}.</p>
+ */
 @ExtendWith(MockitoExtension.class)
 class OrderItemServiceTest {
 
@@ -59,9 +65,9 @@ class OrderItemServiceTest {
 
         when(orderRepository.findById(orderId)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> orderItemService.addItem(orderId, dto))
-                .isInstanceOf(EntityNotFoundException.class)
-                .hasMessage("Order not found");
+        EntityNotFoundException ex = assertThrows(EntityNotFoundException.class, () -> orderItemService.addItem(orderId, dto));
+
+        assertEquals("Order not found", ex.getMessage());
     }
 
     @Test
@@ -70,9 +76,9 @@ class OrderItemServiceTest {
 
         when(orderRepository.findById(orderId)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> orderItemService.findByOrderId(orderId))
-                .isInstanceOf(EntityNotFoundException.class)
-                .hasMessage("Order not found");
+        EntityNotFoundException ex = assertThrows(EntityNotFoundException.class, () -> orderItemService.findByOrderId(orderId));
+
+        assertEquals("Order not found", ex.getMessage());
     }
 
     @Test
@@ -96,5 +102,25 @@ class OrderItemServiceTest {
 
         assertThat(order.getTotalAmount()).isEqualByComparingTo(new BigDecimal("250.00"));
         assertThat(order.getItems()).hasSize(2);
+    }
+
+    @Test
+    void findByOrderId_ShouldMapExistingItems() {
+        UUID orderId = UUID.randomUUID();
+        Order order = new Order();
+        order.setId(orderId);
+        OrderItem item = new OrderItem();
+        item.setProductName("Product 1");
+        item.setQuantity(2);
+        item.setUnitPrice(new BigDecimal("10.00"));
+        order.addItem(item);
+
+        when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
+
+        List<OrderItemDTO> result = orderItemService.findByOrderId(orderId);
+
+        assertEquals(1, result.size());
+        assertEquals("Product 1", result.get(0).productName());
+        assertThat(result.get(0).subtotal()).isEqualByComparingTo(new BigDecimal("20.00"));
     }
 }

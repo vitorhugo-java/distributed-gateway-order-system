@@ -94,6 +94,20 @@ public class AuthControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
+            @Test
+            public void login_WhenUnexpectedError_ShouldReturn500() throws Exception {
+            LoginRequest request = new LoginRequest("test@example.com", "password");
+
+            when(authService.authenticate(any(LoginRequest.class)))
+                .thenThrow(new RuntimeException("Unexpected"));
+
+            mockMvc.perform(post("/auth/login")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.title").value("Internal Server Error"));
+            }
+
     /**
      * Tests the login endpoint with malformed email format.
      * Verifies HTTP 400 Bad Request response is returned.

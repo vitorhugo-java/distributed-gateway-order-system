@@ -23,6 +23,7 @@ import java.io.IOException;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -109,4 +110,58 @@ public class OrderProxyControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string("proxied"));
     }
+
+            @Test
+            public void shouldProxyRequestBody() throws Exception {
+            mockWebServer.enqueue(new MockResponse()
+                .setResponseCode(201)
+                .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .setBody("created"));
+
+            var mvcResult = mockMvc.perform(post("/api/orders")
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer token")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("{\"value\":\"x\"}"))
+                .andExpect(request().asyncStarted())
+                .andReturn();
+
+            mockMvc.perform(asyncDispatch(mvcResult))
+                .andExpect(status().isCreated())
+                .andExpect(content().string("created"));
+            }
+
+            @Test
+            public void shouldPropagateDownstreamErrorStatus() throws Exception {
+            mockWebServer.enqueue(new MockResponse()
+                .setResponseCode(404)
+                .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .setBody("not-found"));
+
+            var mvcResult = mockMvc.perform(get("/api/orders/missing")
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer token"))
+                .andExpect(request().asyncStarted())
+                .andReturn();
+
+            mockMvc.perform(asyncDispatch(mvcResult))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("not-found"));
+            }
+
+            @Test
+            public void shouldProxyRequestWithQueryString() throws Exception {
+            mockWebServer.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .setBody("query-ok"));
+
+            var mvcResult = mockMvc.perform(get("/api/orders/search")
+                    .param("status", "PENDING")
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer token"))
+                .andExpect(request().asyncStarted())
+                .andReturn();
+
+            mockMvc.perform(asyncDispatch(mvcResult))
+                .andExpect(status().isOk())
+                .andExpect(content().string("query-ok"));
+            }
 }

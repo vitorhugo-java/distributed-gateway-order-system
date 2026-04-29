@@ -20,7 +20,7 @@ Key architectural highlights include:
 
 ---
 
-- JavaDoc + TestReports + Coverage Tests: 
+- Javadoc + TestReports + Coverage Tests Reports: 
 - Production URL:
 
 ---

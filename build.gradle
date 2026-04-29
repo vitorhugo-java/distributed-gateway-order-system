@@ -19,12 +19,12 @@ subprojects {
     version = '0.0.1-SNAPSHOT'
 
     def excludedPatterns = [
-            "**/config/*",
-            "**/dto/*",
-            "**/entity/*",
-            "**/exception/*",
-            "**/*Application*",
-            "**/*ServletInitializer*"
+            "**/dto/**",
+            "**/entity/**",
+            "**/config/**",
+            "**/Api*Application.class",
+            "**/ServletInitializer.class",
+            "**/exception/*Exception.class"
     ]
 
     java {

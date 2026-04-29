@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,9 +19,14 @@ import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+/**
+ * <h1>AuthServiceTest</h1>
+ * <p>Verifies successful authentication and failure paths for {@link AuthService}.</p>
+ */
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
 
@@ -51,5 +57,17 @@ class AuthServiceTest {
         assertEquals("mocked-token", response.token());
         assertEquals("Bearer", response.type());
         verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
+    }
+
+    @Test
+    void shouldThrowWhenCredentialsAreInvalid() {
+        LoginRequest request = new LoginRequest("test@email.com", "invalid");
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenThrow(new BadCredentialsException("Invalid credentials"));
+
+        assertThrows(BadCredentialsException.class, () -> authService.authenticate(request));
+
+        verify(userDetailsService, never()).loadUserByUsername(anyString());
+        verify(jwtService, never()).generateToken(any(UserDetails.class));
     }
 }
