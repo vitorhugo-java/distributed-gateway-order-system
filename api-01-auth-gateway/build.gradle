@@ -36,3 +36,13 @@ tasks.named('asciidoctor') {
     inputs.dir snippetsDir
     dependsOn test
 }
+
+graalvmNative {
+    binaries {
+        main {
+            mainClass = 'com.order.api01authgateway.Api01AuthGatewayApplication'
+            
+            buildArgs.add('--no-fallback') 
+        }
+    }
+}
