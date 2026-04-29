@@ -8,6 +8,9 @@ import org.hibernate.annotations.UuidGenerator;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+/**
+ * Entidade que representa um item de um pedido no sistema.
+ */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -37,6 +40,9 @@ public class OrderItem {
     @JoinColumn(name = "order_id")
     private Order order;
 
+    /**
+     * Atualiza o subtotal do item com base na quantidade e preço unitário.
+     */
     private void updateSubtotal() {
         if (quantity != null && unitPrice != null) {
             this.subtotal = unitPrice.multiply(BigDecimal.valueOf(quantity));

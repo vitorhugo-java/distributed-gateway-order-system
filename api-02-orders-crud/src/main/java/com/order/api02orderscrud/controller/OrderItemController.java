@@ -13,33 +13,47 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * REST Controller to manage items of an order.
+ */
 @RestController
 @RequestMapping("/api/orders/{orderId}/items")
 @RequiredArgsConstructor
-@Tag(name = "Itens do Pedido", description = "Endpoints para gerenciamento de itens do pedido")
+@Tag(name = "Order Items", description = "Endpoints for managing order items")
 @SecurityRequirement(name = "bearerAuth")
 public class OrderItemController {
 
     private final OrderItemService orderItemService;
 
+    /**
+     * Finds all items associated with an order.
+     * @param orderId order identifier
+     * @return list of found items
+     */
     @GetMapping
-    @Operation(summary = "Listar itens do pedido", description = "Retorna a lista de itens associados a um pedido")
+    @Operation(summary = "List order items", description = "Returns the list of items associated with an order")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Sucesso"),
-            @ApiResponse(responseCode = "401", description = "Não autorizado"),
-            @ApiResponse(responseCode = "404", description = "Pedido não encontrado")
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "404", description = "Order not found")
     })
     public List<OrderItemDTO> findByOrderId(@PathVariable UUID orderId) {
         return orderItemService.findByOrderId(orderId);
     }
 
+    /**
+     * Adds a new item to the order.
+     * @param orderId order identifier
+     * @param dto new item DTO
+     * @return created item DTO
+     */
     @PostMapping
-    @Operation(summary = "Adicionar item ao pedido", description = "Adiciona um novo item ao pedido especificado")
+    @Operation(summary = "Add item to order", description = "Adds a new item to the specified order")
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Adicionado com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Dados inválidos"),
-            @ApiResponse(responseCode = "401", description = "Não autorizado"),
-            @ApiResponse(responseCode = "404", description = "Pedido não encontrado")
+            @ApiResponse(responseCode = "201", description = "Added successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid data"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "404", description = "Order not found")
     })
     public OrderItemDTO addItem(@PathVariable UUID orderId, @RequestBody OrderItemDTO dto) {
         return orderItemService.addItem(orderId, dto);
