@@ -1,6 +1,9 @@
 package com.order.api02orderscrud.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.UuidGenerator;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -8,42 +11,36 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@Setter
+@Getter
 @Entity
+@NoArgsConstructor
 @Table(name = "orders")
 public class Order {
 
     @Id
     @UuidGenerator(style = UuidGenerator.Style.TIME)
+    @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
+    @Column(name = "customer_name", nullable = false)
     private String customerName;
+
+    @Column(name = "customer_email", nullable = false)
     private String customerEmail;
+
+    @Column(name = "order_date", nullable = false)
     private LocalDateTime orderDate;
 
+    @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
+    @Column(name = "total_amount", nullable = false)
     private BigDecimal totalAmount;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> items = new ArrayList<>();
-
-    public Order() {}
-
-    public UUID getId() { return id; }
-    public void setId(UUID id) { this.id = id; }
-    public String getCustomerName() { return customerName; }
-    public void setCustomerName(String customerName) { this.customerName = customerName; }
-    public String getCustomerEmail() { return customerEmail; }
-    public void setCustomerEmail(String customerEmail) { this.customerEmail = customerEmail; }
-    public LocalDateTime getOrderDate() { return orderDate; }
-    public void setOrderDate(LocalDateTime orderDate) { this.orderDate = orderDate; }
-    public OrderStatus getStatus() { return status; }
-    public void setStatus(OrderStatus status) { this.status = status; }
-    public BigDecimal getTotalAmount() { return totalAmount; }
-    public void setTotalAmount(BigDecimal totalAmount) { this.totalAmount = totalAmount; }
-    public List<OrderItem> getItems() { return items; }
-    public void setItems(List<OrderItem> items) { this.items = items; }
 
     public void addItem(OrderItem item) {
         items.add(item);
