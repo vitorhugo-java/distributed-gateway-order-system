@@ -31,7 +31,7 @@ services:
       - "8080:8080"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/ordersystem_auth_db
-      - API_ORDERS_URL=http://api-orders:8081
+      - APPLICATION_GATEWAY_DOWNSTREAM_URL=http://api-orders:8081
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root
     depends_on:

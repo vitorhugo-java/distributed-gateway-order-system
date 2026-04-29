@@ -10,7 +10,7 @@ on:
       - "settings.gradle"
       - "gradle/**"
       - "gradlew"
-      - "images-multi-module.yml"
+      - ".github/workflows/images-multi-module.yml"
   workflow_dispatch:
 
 env:
@@ -44,6 +44,9 @@ jobs:
         run: |
           find . -type f -name "gradlew" -exec sed -i 's/\r$//' {} +
           find . -type f -name "gradlew" -exec chmod +x {} +
+
+      - name: Run api-01-auth-gateway tests
+        run: ./gradlew :api-01-auth-gateway:test --no-daemon
 
       - name: Build bootWar
         run: ./gradlew :api-01-auth-gateway:bootWar -x test --no-daemon
@@ -104,6 +107,9 @@ jobs:
         run: |
           find . -type f -name "gradlew" -exec sed -i 's/\r$//' {} +
           find . -type f -name "gradlew" -exec chmod +x {} +
+
+      - name: Run api-02-orders-crud tests
+        run: ./gradlew :api-02-orders-crud:test --no-daemon
 
       - name: Build bootWar
         run: ./gradlew :api-02-orders-crud:bootWar -x test --no-daemon

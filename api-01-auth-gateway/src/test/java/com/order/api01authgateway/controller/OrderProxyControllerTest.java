@@ -100,12 +100,13 @@ public class OrderProxyControllerTest {
      */
     @Test
     public void shouldProxyRequest() throws Exception {
+        var orderId = "11111111-1111-1111-1111-111111111111";
         mockWebServer.enqueue(new MockResponse()
                 .setResponseCode(200)
                 .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .setBody("proxied"));
 
-        var mvcResult = mockMvc.perform(get("/api/orders/test")
+        var mvcResult = mockMvc.perform(get("/api/orders/{id}", orderId)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer token"))
             .andExpect(request().asyncStarted())
             .andReturn();
@@ -136,12 +137,13 @@ public class OrderProxyControllerTest {
 
             @Test
             public void shouldPropagateDownstreamErrorStatus() throws Exception {
+            var orderId = "22222222-2222-2222-2222-222222222222";
             mockWebServer.enqueue(new MockResponse()
                 .setResponseCode(404)
                 .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .setBody("not-found"));
 
-            var mvcResult = mockMvc.perform(get("/api/orders/missing")
+            var mvcResult = mockMvc.perform(get("/api/orders/{id}", orderId)
                     .header(HttpHeaders.AUTHORIZATION, "Bearer token"))
                 .andExpect(request().asyncStarted())
                 .andReturn();
@@ -158,7 +160,7 @@ public class OrderProxyControllerTest {
                 .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .setBody("query-ok"));
 
-            var mvcResult = mockMvc.perform(get("/api/orders/search")
+            var mvcResult = mockMvc.perform(get("/api/orders")
                     .param("status", "PENDING")
                     .header(HttpHeaders.AUTHORIZATION, "Bearer token"))
                 .andExpect(request().asyncStarted())
