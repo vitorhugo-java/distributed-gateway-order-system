@@ -116,12 +116,22 @@ We implement stateless authentication using JWT.
 - Manual Proxying (instead of use Spring Cloud Gateway): WebClient used for fine-grained control over headers and error handling
 - Database per Service: isolated databases to enforce shared-nothing architecture
 - Multi-Stage Build: optimized Docker images with reduced size and attack surface
+- JWT for Stateless Auth: eliminates session management and scales horizontally without sticky sessions
+- UUID v7 for IDs orders-crud: time-ordered, optimized for B-Tree indexes in PostgreSQL, reduces fragmentation and avoid lock. The cons for using UUID is that it use more storage space than a traditional auto-incrementing integer, and use a little more CPU (~30–45 ns) than integer autoincrement, and it can be less performant for certain queries due to its larger size. However, the benefits of global uniqueness and reduced fragmentation often outweigh these drawbacks in distributed systems.
 
 ---
 
 ## Pipelines GitHub Actions
-
+- **Qodana**: Static code analysis to ensure code quality and maintainability.
+- **main**: CI/CD pipeline for building, testing, and deploying the application.
+  - Secrets:
+    - **SSH_HOST**: Hostname or IP address of the remote server for SSH deployment.
+    - **SSH_USERNAME**: Username for SSH authentication on the remote server.
+    - **SSH_PRIVATE_KEY**: Private SSH key for authentication, stored as a GitHub secret.
+    - **SSH_PORT**: Port number for SSH connection.
+- **deploy-everything**: Deploy Docs, Tests, Coverage Reports to GitHub Pages.
 
 ---
 
-## ER Diagrams
+## ER Diagram
+![erdiagram.png](erdiagram.png)
