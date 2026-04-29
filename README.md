@@ -130,8 +130,3 @@ We implement stateless authentication using JWT.
     - **SSH_PRIVATE_KEY**: Private SSH key for authentication, stored as a GitHub secret.
     - **SSH_PORT**: Port number for SSH connection.
 - **deploy-everything**: Deploy Docs, Tests, Coverage Reports to GitHub Pages.
-
----
-
-## ER Diagram
-![erdiagram.png](erdiagram.png)
