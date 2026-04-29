@@ -110,4 +110,16 @@ We implement stateless authentication using JWT.
 
 - Manual Proxying (instead of use Spring Cloud Gateway): WebClient used for fine-grained control over headers and error handling
 - Database per Service: isolated databases to enforce shared-nothing architecture
-- Multi-Stage Build: optimized Docker images with reduced size and attack surface  
+- Multi-Stage Build: optimized Docker images with reduced size and attack surface
+
+---
+
+## Pipelines GitHub Actions
+
+
+---
+
+## Utils Links
+
+- JavaDoc + TestReports + Coverage Tests: 
+- Production URL: 
