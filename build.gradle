@@ -56,6 +56,7 @@ subprojects {
         compileOnly 'org.projectlombok:lombok'
         implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.3'
         annotationProcessor 'org.projectlombok:lombok'
+        annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
         developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
         // Database Runtimes
