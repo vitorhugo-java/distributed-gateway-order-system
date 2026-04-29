@@ -57,6 +57,14 @@ class JwtAuthenticationFilterTest {
     }
 
     @Test
+    void shouldFilterAsyncDispatches() {
+        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtService, userDetailsService);
+
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
+        org.junit.jupiter.api.Assertions.assertFalse(filter.shouldNotFilterAsyncDispatch());
+    }
+
+    @Test
     void shouldSkipWhenAuthorizationHeaderIsNotBearer() throws ServletException, IOException {
         JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtService, userDetailsService);
         MockHttpServletRequest request = new MockHttpServletRequest();
