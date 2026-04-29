@@ -58,3 +58,7 @@ Thumbs.db
 /.aiox-core/
 /.aiox
 .vscode/settings.json
+.boot-webmvc-test-jars.txt
+.boot-webmvc-contents.txt
+.boot-test-autoconfigure-contents.txt
+.boot-artifact-names.txt
