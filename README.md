@@ -1,14 +1,14 @@
 # Distributed Order Orchestrator (DOO)
 
 ![Java](https://img.shields.io/badge/Java-21-orange?style=for-the-badge&logo=openjdk)
-![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.0.6-brightgreen?style=for-the-badge&logo=springboot)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.3.6-brightgreen?style=for-the-badge&logo=springboot)
 ![Docker](https://img.shields.io/badge/Docker-Enabled-blue?style=for-the-badge&logo=docker)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-blue?style=for-the-badge&logo=postgresql)
 ![Gradle](https://img.shields.io/badge/Gradle-8.10-02303A?style=for-the-badge&logo=gradle)
 
 ## 🚀 Overview
 
-This project implements a robust, distributed architecture for an Order Management System, built with **Java 21** and **Spring Boot 4**. It adopts a microservices approach, utilizing an Auth Gateway pattern to handle security at the edge. 
+This project implements a robust, distributed architecture for an Order Management System, built with **Java 21** and **Spring Boot 3**. It adopts a microservices approach, utilizing an Auth Gateway pattern to handle security at the edge. 
 
 A high-performance, distributed ecosystem designed for secure order management. This project features a robust **API Gateway** using a manual **WebClient** proxy pattern to ensure centralized authentication and seamless service orchestration.
 
@@ -62,7 +62,7 @@ docker-compose up --build
 
 ## Technology Stack
 
-- Core: Java 21, Spring Boot 4.0.6
+- Core: Java 21, Spring Boot 3.3.6
 - Security: Spring Security, JWT (JSON Web Token)
 - Networking: Spring WebFlux (WebClient) for reactive proxying
 - Persistence: Spring Data JPA, Hibernate 7, Flyway Migrations

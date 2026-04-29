@@ -9,14 +9,14 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -38,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * properly returned to clients without loading the full application context.
  * </p>
  * <p>
- * Implements the WebMvcTest slice pattern with Spring Boot 4.0.x and Spring Security 7.x.
+ * Implements the WebMvcTest slice pattern with Spring Boot 3.x and Spring Security 6.x.
  * </p>
  */
 @WebMvcTest(OrderProxyController.class)
@@ -49,13 +49,13 @@ public class OrderProxyControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockitoBean
+    @MockBean
     private JwtService jwtService;
 
-    @MockitoBean
+    @MockBean
     private AuthenticationProvider authenticationProvider;
 
-    @MockitoBean
+    @MockBean
     private UserDetailsService userDetailsService;
 
     private static MockWebServer mockWebServer;

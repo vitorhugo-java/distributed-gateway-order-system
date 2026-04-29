@@ -9,13 +9,13 @@ import com.order.api01authgateway.service.AuthService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -31,8 +31,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * including successful logins, invalid credentials, and malformed request handling.
  * </p>
  * <p>
- * Utilizes Spring Boot 4.0.x WebMvcTest slice pattern with {@code @MockitoBean} for
- * dependency mocking in compliance with Spring Security 7.x standards.
+ * Utilizes the Spring Boot 3.x WebMvcTest slice pattern with {@code @MockBean} for
+ * dependency mocking in compliance with Spring Security 6.x standards.
  * </p>
  */
 @WebMvcTest(AuthController.class)
@@ -45,16 +45,16 @@ public class AuthControllerTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @MockitoBean
+    @MockBean
     private AuthService authService;
 
-    @MockitoBean
+    @MockBean
     private JwtService jwtService;
 
-    @MockitoBean
+    @MockBean
     private AuthenticationProvider authenticationProvider;
 
-    @MockitoBean
+    @MockBean
     private UserDetailsService userDetailsService;
 
     /**
