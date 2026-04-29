@@ -5,6 +5,7 @@ FROM gradle:8.10-jdk21-alpine AS gradle-deps
 WORKDIR /app
 
 COPY gradlew .
+RUN chmod +x gradlew
 COPY gradle/ gradle/
 COPY build.gradle .
 COPY settings.gradle .
@@ -41,6 +42,7 @@ WORKDIR /app
 RUN microdnf install -y findutils && microdnf clean all
 
 COPY gradlew .
+RUN chmod +x gradlew
 COPY gradle/ gradle/
 COPY build.gradle .
 COPY settings.gradle .
