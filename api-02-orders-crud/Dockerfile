@@ -15,7 +15,8 @@ COPY api-02-orders-crud/src/  api-02-orders-crud/src/
 RUN tr -d '\r' < gradlew > gradlew.unix && mv gradlew.unix gradlew && chmod +x gradlew \
     && ./gradlew :api-02-orders-crud:nativeCompile -x test --no-daemon \
         -Porg.gradle.java.installations.auto-download=false \
-        -Porg.gradle.java.installations.auto-detect=false
+        -Porg.gradle.java.installations.auto-detect=false \
+        -Porg.gradle.java.installations.paths="$JAVA_HOME"
 
 FROM busybox:glibc AS native
 WORKDIR /app
