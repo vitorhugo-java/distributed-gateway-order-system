@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JwtAuthenticationFilter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">distributed-gateway-order-system</a> &gt; <a href="index.source.html" class="el_package">com.order.api01authgateway.security</a> &gt; <span class="el_source">JwtAuthenticationFilter.java</span></div><h1>JwtAuthenticationFilter.java</h1><pre class="source lang-java linenums">package com.order.api01authgateway.security;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+
+/**
+ * Filter responsible for intercepting HTTP requests to validate JWT tokens.
+ * &lt;p&gt;
+ * This filter extracts the {@code Authorization} header from incoming requests, validates
+ * the JWT, and sets the {@link org.springframework.security.core.context.SecurityContext}
+ * with the authenticated user details if the token is valid.
+ * &lt;/p&gt;
+ *
+ * @see JwtService
+ */
+@Component
+@RequiredArgsConstructor
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
+    private final JwtService jwtService;
+    private final UserDetailsService userDetailsService;
+
+    /**
+     * Intercepts the request to perform JWT authentication.
+     *
+     * @param request     The current HTTP request.
+     * @param response    The current HTTP response.
+     * @param filterChain The filter chain to continue the request processing.
+     * @throws ServletException If a servlet error occurs.
+     * @throws IOException      If an I/O error occurs.
+     */
+    @Override
+    protected void doFilterInternal(
+            @NonNull HttpServletRequest request,
+            @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain
+    ) throws ServletException, IOException {
+<span class="fc" id="L51">        final String authHeader = request.getHeader(&quot;Authorization&quot;);</span>
+        final String jwt;
+        final String userEmail;
+
+<span class="fc bfc" id="L55" title="All 4 branches covered.">        if (authHeader == null || !authHeader.startsWith(&quot;Bearer &quot;)) {</span>
+<span class="fc" id="L56">            filterChain.doFilter(request, response);</span>
+<span class="fc" id="L57">            return;</span>
+        }
+
+<span class="fc" id="L60">        jwt = authHeader.substring(7);</span>
+<span class="fc" id="L61">        userEmail = jwtService.extractUsername(jwt);</span>
+
+<span class="fc bfc" id="L63" title="All 4 branches covered.">        if (userEmail != null &amp;&amp; SecurityContextHolder.getContext().getAuthentication() == null) {</span>
+<span class="fc" id="L64">            UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);</span>
+
+<span class="fc bfc" id="L66" title="All 2 branches covered.">            if (jwtService.isTokenValid(jwt, userDetails)) {</span>
+<span class="fc" id="L67">                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(</span>
+                        userDetails,
+                        null,
+<span class="fc" id="L70">                        userDetails.getAuthorities()</span>
+                );
+<span class="fc" id="L72">                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));</span>
+<span class="fc" id="L73">                SecurityContextHolder.getContext().setAuthentication(authToken);</span>
+            }
+        }
+<span class="fc" id="L76">        filterChain.doFilter(request, response);</span>
+<span class="fc" id="L77">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

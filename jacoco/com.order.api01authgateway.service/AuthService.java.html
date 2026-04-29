@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AuthService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">distributed-gateway-order-system</a> &gt; <a href="index.source.html" class="el_package">com.order.api01authgateway.service</a> &gt; <span class="el_source">AuthService.java</span></div><h1>AuthService.java</h1><pre class="source lang-java linenums">package com.order.api01authgateway.service;
+
+import com.order.api01authgateway.dto.LoginRequest;
+import com.order.api01authgateway.dto.TokenResponse;
+import com.order.api01authgateway.security.JwtService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.stereotype.Service;
+
+/**
+ * Service component responsible for handling user authentication business logic.
+ * &lt;p&gt;
+ * This service coordinates the authentication process by verifying credentials against
+ * configured identity providers and generating secure access tokens using {@link JwtService}.
+ * It relies on Spring Security's {@link AuthenticationManager} to perform BCrypt-based
+ * password verification.
+ * &lt;/p&gt;
+ */
+@Service
+@RequiredArgsConstructor
+public class AuthService {
+
+    private final AuthenticationManager authenticationManager;
+    private final UserDetailsService userDetailsService;
+    private final JwtService jwtService;
+
+    /**
+     * Authenticates a user and returns a token response.
+     *
+     * @param request The login request containing email and password.
+     * @return A {@link TokenResponse} containing the generated JWT.
+     * @throws org.springframework.security.core.AuthenticationException If authentication fails (e.g., bad credentials).
+     */
+    public TokenResponse authenticate(LoginRequest request) {
+<span class="fc" id="L38">        authenticationManager.authenticate(</span>
+                new UsernamePasswordAuthenticationToken(
+<span class="fc" id="L40">                        request.email(),</span>
+<span class="fc" id="L41">                        request.password()</span>
+                )
+        );
+
+<span class="fc" id="L45">        UserDetails user = userDetailsService.loadUserByUsername(request.email());</span>
+<span class="fc" id="L46">        String jwtToken = jwtService.generateToken(user);</span>
+
+<span class="fc" id="L48">        return new TokenResponse(jwtToken, &quot;Bearer&quot;, jwtService.getExpirationTime());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

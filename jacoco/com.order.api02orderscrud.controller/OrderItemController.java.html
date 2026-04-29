@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OrderItemController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">distributed-gateway-order-system</a> &gt; <a href="index.source.html" class="el_package">com.order.api02orderscrud.controller</a> &gt; <span class="el_source">OrderItemController.java</span></div><h1>OrderItemController.java</h1><pre class="source lang-java linenums">package com.order.api02orderscrud.controller;
+
+import com.order.api02orderscrud.dto.OrderItemDTO;
+import com.order.api02orderscrud.service.OrderItemService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
+
+@RestController
+@RequestMapping(&quot;/api/orders/{orderId}/items&quot;)
+@RequiredArgsConstructor
+@Tag(name = &quot;Order Items&quot;, description = &quot;Gerenciamento de itens de pedido&quot;)
+@SecurityRequirement(name = &quot;bearerAuth&quot;)
+public class OrderItemController {
+
+    private final OrderItemService orderItemService;
+
+    @GetMapping
+    @Operation(summary = &quot;Listar itens do pedido&quot;, description = &quot;Retorna a lista de itens associados a um pedido&quot;)
+    @ApiResponses({
+            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Sucesso&quot;),
+            @ApiResponse(responseCode = &quot;401&quot;, description = &quot;Não autorizado&quot;),
+            @ApiResponse(responseCode = &quot;404&quot;, description = &quot;Pedido não encontrado&quot;)
+    })
+    public List&lt;OrderItemDTO&gt; findByOrderId(@PathVariable UUID orderId) {
+<span class="fc" id="L35">        return orderItemService.findByOrderId(orderId);</span>
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = &quot;Adicionar item ao pedido&quot;, description = &quot;Adiciona um novo item ao pedido especificado&quot;)
+    @ApiResponses({
+            @ApiResponse(responseCode = &quot;201&quot;, description = &quot;Adicionado com sucesso&quot;),
+            @ApiResponse(responseCode = &quot;400&quot;, description = &quot;Erro de Validação&quot;),
+            @ApiResponse(responseCode = &quot;401&quot;, description = &quot;Não autorizado&quot;),
+            @ApiResponse(responseCode = &quot;404&quot;, description = &quot;Pedido não encontrado&quot;)
+    })
+    public OrderItemDTO addItem(@PathVariable UUID orderId, @Valid @RequestBody OrderItemDTO dto) {
+<span class="fc" id="L48">        return orderItemService.addItem(orderId, dto);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>
