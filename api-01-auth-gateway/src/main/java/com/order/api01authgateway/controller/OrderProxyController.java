@@ -42,6 +42,11 @@ public class OrderProxyController {
         return proxy(request, null);
     }
 
+    @GetMapping("/v3/api-docs")
+    public Mono<ResponseEntity<byte[]>> apiDocs(HttpServletRequest request) {
+        return proxy(request, null, "/v3/api-docs");
+    }
+
     @GetMapping("/{id}")
     @Operation(summary = "Buscar pedido por ID", description = "Retorna os detalhes de um pedido específico")
     @ApiResponses({
@@ -131,7 +136,11 @@ public class OrderProxyController {
     // ─── Internal proxy helper ────────────────────────────────────────────
 
     private Mono<ResponseEntity<byte[]>> proxy(HttpServletRequest request, Object body) {
-        String path = request.getRequestURI();
+        return proxy(request, body, request.getRequestURI());
+    }
+
+    private Mono<ResponseEntity<byte[]>> proxy(HttpServletRequest request, Object body, String targetPath) {
+        String path = targetPath;
         String query = request.getQueryString() != null ? "?" + request.getQueryString() : "";
 
         HttpHeaders forwardHeaders = new HttpHeaders();

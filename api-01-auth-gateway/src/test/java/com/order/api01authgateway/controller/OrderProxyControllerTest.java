@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -154,7 +155,7 @@ public class OrderProxyControllerTest {
             }
 
             @Test
-            public void shouldProxyRequestWithQueryString() throws Exception {
+    public void shouldProxyRequestWithQueryString() throws Exception {
             mockWebServer.enqueue(new MockResponse()
                 .setResponseCode(200)
                 .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -169,5 +170,30 @@ public class OrderProxyControllerTest {
             mockMvc.perform(asyncDispatch(mvcResult))
                 .andExpect(status().isOk())
                 .andExpect(content().string("query-ok"));
+            }
+
+            @Test
+            public void shouldProxyApiDocsToDownstreamDocsPath() throws Exception {
+            mockWebServer.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .setBody("{\"openapi\":\"3.1.0\"}"));
+
+            var mvcResult = mockMvc.perform(get("/api/orders/v3/api-docs"))
+                .andExpect(request().asyncStarted())
+                .andReturn();
+
+            mockMvc.perform(asyncDispatch(mvcResult))
+                .andExpect(status().isOk())
+                .andExpect(content().json("{\"openapi\":\"3.1.0\"}"));
+
+            okhttp3.mockwebserver.RecordedRequest recordedRequest = null;
+            okhttp3.mockwebserver.RecordedRequest nextRequest;
+            while ((nextRequest = mockWebServer.takeRequest(100, TimeUnit.MILLISECONDS)) != null) {
+                recordedRequest = nextRequest;
+            }
+
+            org.junit.jupiter.api.Assertions.assertNotNull(recordedRequest);
+            org.junit.jupiter.api.Assertions.assertEquals("/v3/api-docs", recordedRequest.getPath());
             }
 }
