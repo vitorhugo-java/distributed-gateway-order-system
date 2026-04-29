@@ -55,12 +55,12 @@ RUN tr -d '\r' < gradlew > gradlew.unix && mv gradlew.unix gradlew && chmod +x g
         -Porg.gradle.java.installations.auto-detect=false \
         -Porg.gradle.java.installations.paths="$JAVA_HOME"
 
-FROM gcr.io/distroless/base-debian12 AS native
+FROM gcr.io/distroless/cc-debian12 AS native
 WORKDIR /app
 
 COPY --from=build-native \
      /app/api-01-auth-gateway/build/native/nativeCompile/api-01-auth-gateway \
-     ./app
+     ./app-exe
 
 EXPOSE 8080
-ENTRYPOINT ["/app/app"]
+ENTRYPOINT ["./app-exe"]
