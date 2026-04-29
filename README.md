@@ -66,8 +66,8 @@ docker-compose up --build
 - Security: Spring Security, JWT (JSON Web Token)
 - Networking: Spring WebFlux (WebClient) for reactive proxying
 - Persistence: Spring Data JPA, Hibernate 7, Flyway Migrations
-- Databases: PostgreSQL (Production), H2 (Tests)
-- DevOps: Docker, multi-stage Dockerfiles, Docker Compose
+- Databases: PostgreSQL (Production), H2 (Tests/Dev Profile)
+- DevOps: Docker, multi-stage Dockerfiles, Docker Compose, GitHub Actions
 - Documentation: SpringDoc OpenAPI (Swagger UI)
 
 ---
