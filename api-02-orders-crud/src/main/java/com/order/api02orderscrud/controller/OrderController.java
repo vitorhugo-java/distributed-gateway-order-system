@@ -2,6 +2,7 @@ package com.order.api02orderscrud.controller;
 
 import com.order.api02orderscrud.dto.OrderDTO;
 import com.order.api02orderscrud.service.OrderService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -11,13 +12,10 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/orders")
+@RequiredArgsConstructor
 public class OrderController {
 
     private final OrderService orderService;
-
-    public OrderController(OrderService orderService) {
-        this.orderService = orderService;
-    }
 
     @GetMapping
     public Page<OrderDTO> findAll(Pageable pageable) {
