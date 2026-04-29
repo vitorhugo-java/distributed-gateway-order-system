@@ -12,7 +12,7 @@ COPY api-02-orders-crud/build.gradle  api-02-orders-crud/build.gradle
 COPY api-01-auth-gateway/src/ api-01-auth-gateway/src/
 COPY api-02-orders-crud/src/  api-02-orders-crud/src/
 
-RUN ./gradlew :api-02-orders-crud:nativeCompile-x test --no-daemon \
+RUN ./gradlew clean :api-02-orders-crud:nativeCompile -x test --no-daemon \
     -Porg.gradle.java.installations.auto-download=false \
     -Porg.gradle.java.installations.auto-detect=false \
     -Porg.gradle.java.installations.paths="$JAVA_HOME"
