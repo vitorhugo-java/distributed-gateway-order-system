@@ -19,6 +19,7 @@ import java.util.UUID;
 public class Order {
 
     @Id
+    @GeneratedValue
     @UuidGenerator(style = UuidGenerator.Style.TIME)
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
