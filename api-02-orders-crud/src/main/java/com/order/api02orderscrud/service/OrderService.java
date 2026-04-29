@@ -2,6 +2,7 @@ package com.order.api02orderscrud.service;
 
 import com.order.api02orderscrud.dto.OrderDTO;
 import com.order.api02orderscrud.entity.Order;
+import com.order.api02orderscrud.exception.EntityNotFoundException;
 import com.order.api02orderscrud.mapper.OrderMapper;
 import com.order.api02orderscrud.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,7 @@ public class OrderService {
     public OrderDTO findById(UUID id) {
         return orderRepository.findById(id)
                 .map(orderMapper::toDto)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Order not found"));
     }
 
     @Transactional
@@ -40,6 +41,9 @@ public class OrderService {
 
     @Transactional
     public void delete(UUID id) {
+        if (!orderRepository.existsById(id)) {
+            throw new EntityNotFoundException("Order not found");
+        }
         orderRepository.deleteById(id);
     }
 }

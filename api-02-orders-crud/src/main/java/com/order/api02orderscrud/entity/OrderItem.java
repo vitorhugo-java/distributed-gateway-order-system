@@ -40,9 +40,16 @@ public class OrderItem {
     @JoinColumn(name = "order_id")
     private Order order;
 
-    /**
-     * Atualiza o subtotal do item com base na quantidade e preço unitário.
-     */
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+        updateSubtotal();
+    }
+
+    public void setUnitPrice(BigDecimal unitPrice) {
+        this.unitPrice = unitPrice;
+        updateSubtotal();
+    }
+
     private void updateSubtotal() {
         if (quantity != null && unitPrice != null) {
             this.subtotal = unitPrice.multiply(BigDecimal.valueOf(quantity));

@@ -7,84 +7,64 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
-/**
- * REST Controller to manage order operations.
- */
 @RestController
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
-@Tag(name = "Orders", description = "Endpoints for order management")
+@Tag(name = "Orders", description = "Gerenciamento de pedidos e itens")
 @SecurityRequirement(name = "bearerAuth")
 public class OrderController {
 
     private final OrderService orderService;
 
-    /**
-     * Lists existing orders in a paginated way.
-     * @param pageable pagination information
-     * @return page containing found orders
-     */
     @GetMapping
-    @Operation(summary = "List orders", description = "Returns a paginated list of orders")
+    @Operation(summary = "Listar pedidos", description = "Retorna uma lista paginada de todos os pedidos")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized")
+            @ApiResponse(responseCode = "200", description = "Sucesso"),
+            @ApiResponse(responseCode = "401", description = "Não autorizado")
     })
     public Page<OrderDTO> findAll(Pageable pageable) {
         return orderService.findAll(pageable);
     }
 
-    /**
-     * Finds an order by its ID.
-     * @param id order identifier
-     * @return DTO of the found order
-     */
     @GetMapping("/{id}")
-    @Operation(summary = "Find order by ID", description = "Returns the details of a specific order")
+    @Operation(summary = "Buscar pedido por ID", description = "Retorna os detalhes de um pedido específico")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "404", description = "Order not found")
+            @ApiResponse(responseCode = "200", description = "Sucesso"),
+            @ApiResponse(responseCode = "401", description = "Não autorizado"),
+            @ApiResponse(responseCode = "404", description = "Pedido não encontrado")
     })
     public OrderDTO findById(@PathVariable UUID id) {
         return orderService.findById(id);
     }
 
-    /**
-     * Creates a new order in the system.
-     * @param dto new order DTO
-     * @return created order DTO
-     */
     @PostMapping
-    @Operation(summary = "Create new order", description = "Creates a new order in the system")
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Criar novo pedido", description = "Cria um novo pedido no sistema")
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Created successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid data"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized")
+            @ApiResponse(responseCode = "201", description = "Criado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Erro de Validação"),
+            @ApiResponse(responseCode = "401", description = "Não autorizado")
     })
-    public OrderDTO save(@RequestBody OrderDTO dto) {
+    public OrderDTO save(@Valid @RequestBody OrderDTO dto) {
         return orderService.save(dto);
     }
 
-    /**
-     * Deletes an existing order by ID.
-     * @param id identifier of the order to be removed
-     * @return empty response with noContent status
-     */
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete order", description = "Removes an order by its ID")
+    @Operation(summary = "Excluir pedido", description = "Remove um pedido pelo seu ID")
     @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Deleted successfully"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "404", description = "Order not found")
+            @ApiResponse(responseCode = "204", description = "Excluído com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Não autorizado"),
+            @ApiResponse(responseCode = "404", description = "Pedido não encontrado")
     })
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         orderService.delete(id);
