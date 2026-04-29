@@ -21,7 +21,6 @@ Key architectural highlights include:
 ---
 
 - Javadoc + TestReports + Coverage Tests Reports: https://vitorhugo-java.github.io/distributed-gateway-order-system/
-- Production URL: 
 
 ---
 
@@ -123,12 +122,5 @@ We implement stateless authentication using JWT.
 
 ## Pipelines GitHub Actions
 - **Qodana**: Static code analysis to ensure code quality and maintainability.
-- **main**: CI/CD pipeline for building, testing, and deploying the application.
-  - Secrets:
-    - **SSH_HOST**: Hostname or IP address of the remote server for SSH deployment.
-    - **SSH_USERNAME**: Username for SSH authentication on the remote server.
-    - **SSH_PRIVATE_KEY**: Private SSH key for authentication, stored as a GitHub secret.
-    - **SSH_PORT**: Port number for SSH connection.
-    - **GHCR_USERNAME**: GitHub username.
-    - **GHCR_TOKEN**: PAT Token from your GitHub account.
-- **deploy-everything**: Deploy Docs, Tests, Coverage Reports to GitHub Pages.
+- **images-multi-module.yml**: Build and publish GraalVM native images to GitHub Container Registry (GHCR) for all microservices.
+- **deploy-docs.yml**: Deploy Docs and Coverage Reports to GitHub Pages.
