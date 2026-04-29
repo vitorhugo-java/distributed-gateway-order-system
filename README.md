@@ -18,6 +18,9 @@ Key architectural highlights include:
 * **Modern Persistence:** Powered by **PostgreSQL 17**, utilizing time-ordered `UUID v7` for optimal B-Tree index performance and anti-fragmentation.
 * **Automated Lifecycle:** Full CI/CD pipeline orchestrated with GitHub Actions for testing, native image building (GHCR), and automated SSH deployments.
 
+- JavaDoc + TestReports + Coverage Tests: 
+- Production URL:
+
 ---
 
 ## System Architecture
@@ -119,7 +122,4 @@ We implement stateless authentication using JWT.
 
 ---
 
-## Utils Links
-
-- JavaDoc + TestReports + Coverage Tests: 
-- Production URL: 
+## ER Diagrams
