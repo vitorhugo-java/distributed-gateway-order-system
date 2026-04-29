@@ -111,6 +111,7 @@ subprojects {
 
     graalvmNative {
         toolchainDetection = false
+        buildArgs.add("--enable-preview")
     }
 }
 
