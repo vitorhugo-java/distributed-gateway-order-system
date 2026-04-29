@@ -14,6 +14,7 @@ on:
       - "api-01-auth-gateway/**"
       - "build.gradle"
       - "settings.gradle"
+  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
