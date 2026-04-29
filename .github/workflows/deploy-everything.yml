@@ -29,8 +29,8 @@ jobs:
         continue-on-error: true
         run: |
           ./gradlew test jacocoTestReport javadoc --no-daemon
-
-        - name: Consolidate Reports into build/docs/reports
+          
+      - name: Consolidate Reports into build/docs/reports
         run: |
           rm -rf build/docs/reports
           mkdir -p build/docs/reports/auth-gateway/docs build/docs/reports/auth-gateway/tests build/docs/reports/auth-gateway/coverage
