@@ -1,3 +1,7 @@
+plugins {
+    id 'org.graalvm.buildtools.native' version '0.11.5' apply false
+}
+
 description = 'api-02-orders-crud'
 
 dependencies {
