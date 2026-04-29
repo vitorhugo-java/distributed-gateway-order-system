@@ -23,7 +23,7 @@ WORKDIR /app
 
 COPY --from=build-native \
      /app/api-02-orders-crud/build/native/nativeCompile/api-02-orders-crud \
-     ./app
+     ./app-exe
 
 EXPOSE 8081
-ENTRYPOINT ["/app/app"]
+ENTRYPOINT ["./app-exe"]
