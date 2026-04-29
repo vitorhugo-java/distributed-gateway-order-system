@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.util.Collections;
 import java.util.UUID;
 
 @RestController
@@ -37,9 +38,8 @@ public class OrderProxyController {
             @ApiResponse(responseCode = "200", description = "Sucesso"),
             @ApiResponse(responseCode = "401", description = "Não autorizado")
     })
-    public Mono<ResponseEntity<byte[]>> findAll(HttpServletRequest request,
-                                                @RequestHeader HttpHeaders headers) {
-        return proxy(request, headers, null);
+    public Mono<ResponseEntity<byte[]>> findAll(HttpServletRequest request) {
+        return proxy(request, null);
     }
 
     @GetMapping("/{id}")
@@ -51,9 +51,8 @@ public class OrderProxyController {
     })
     public Mono<ResponseEntity<byte[]>> findById(
             @Parameter(description = "ID do pedido") @PathVariable UUID id,
-            HttpServletRequest request,
-            @RequestHeader HttpHeaders headers) {
-        return proxy(request, headers, null);
+            HttpServletRequest request) {
+        return proxy(request, null);
     }
 
     @PostMapping
@@ -66,9 +65,8 @@ public class OrderProxyController {
     })
     public Mono<ResponseEntity<byte[]>> save(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Dados do pedido") @RequestBody OrderDTO dto,
-            HttpServletRequest request,
-            @RequestHeader HttpHeaders headers) {
-        return proxyWithBody(request, headers, dto);
+            HttpServletRequest request) {
+        return proxy(request, dto);
     }
 
     @PutMapping("/{id}")
@@ -82,9 +80,8 @@ public class OrderProxyController {
     public Mono<ResponseEntity<byte[]>> update(
             @Parameter(description = "ID do pedido") @PathVariable UUID id,
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Dados atualizados do pedido") @RequestBody OrderDTO dto,
-            HttpServletRequest request,
-            @RequestHeader HttpHeaders headers) {
-        return proxyWithBody(request, headers, dto);
+            HttpServletRequest request) {
+        return proxy(request, dto);
     }
 
     @DeleteMapping("/{id}")
@@ -96,9 +93,8 @@ public class OrderProxyController {
     })
     public Mono<ResponseEntity<byte[]>> delete(
             @Parameter(description = "ID do pedido") @PathVariable UUID id,
-            HttpServletRequest request,
-            @RequestHeader HttpHeaders headers) {
-        return proxy(request, headers, null);
+            HttpServletRequest request) {
+        return proxy(request, null);
     }
 
     // ─── Order Items ──────────────────────────────────────────────────────
@@ -112,9 +108,8 @@ public class OrderProxyController {
     })
     public Mono<ResponseEntity<byte[]>> findItemsByOrderId(
             @Parameter(description = "ID do pedido") @PathVariable UUID orderId,
-            HttpServletRequest request,
-            @RequestHeader HttpHeaders headers) {
-        return proxy(request, headers, null);
+            HttpServletRequest request) {
+        return proxy(request, null);
     }
 
     @PostMapping("/{orderId}/items")
@@ -129,43 +124,32 @@ public class OrderProxyController {
     public Mono<ResponseEntity<byte[]>> addItem(
             @Parameter(description = "ID do pedido") @PathVariable UUID orderId,
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Dados do item") @RequestBody OrderItemDTO dto,
-            HttpServletRequest request,
-            @RequestHeader HttpHeaders headers) {
-        return proxyWithBody(request, headers, dto);
+            HttpServletRequest request) {
+        return proxy(request, dto);
     }
 
-    // ─── Internal proxy helpers ───────────────────────────────────────────
+    // ─── Internal proxy helper ────────────────────────────────────────────
 
-    private Mono<ResponseEntity<byte[]>> proxy(HttpServletRequest request, HttpHeaders headers, byte[] body) {
-        String path = request.getRequestURI().replaceFirst("^/api/orders", "");
+    private Mono<ResponseEntity<byte[]>> proxy(HttpServletRequest request, Object body) {
+        String path = request.getRequestURI();
         String query = request.getQueryString() != null ? "?" + request.getQueryString() : "";
+
+        HttpHeaders forwardHeaders = new HttpHeaders();
+        Collections.list(request.getHeaderNames()).forEach(name -> {
+            if (!name.equalsIgnoreCase(HttpHeaders.HOST)) {
+                Collections.list(request.getHeaders(name))
+                        .forEach(value -> forwardHeaders.add(name, value));
+            }
+        });
 
         WebClient.RequestBodySpec bodySpec = webClient
                 .method(HttpMethod.valueOf(request.getMethod()))
                 .uri(path + query)
-                .headers(h -> {
-                    h.addAll(headers);
-                    h.remove(HttpHeaders.HOST);
-                });
+                .headers(h -> h.addAll(forwardHeaders));
 
         if (body != null) {
             return bodySpec.bodyValue(body).exchangeToMono(response -> response.toEntity(byte[].class));
         }
         return bodySpec.exchangeToMono(response -> response.toEntity(byte[].class));
-    }
-
-    private Mono<ResponseEntity<byte[]>> proxyWithBody(HttpServletRequest request, HttpHeaders headers, Object dto) {
-        String path = request.getRequestURI().replaceFirst("^/api/orders", "");
-        String query = request.getQueryString() != null ? "?" + request.getQueryString() : "";
-
-        return webClient
-                .method(HttpMethod.valueOf(request.getMethod()))
-                .uri(path + query)
-                .headers(h -> {
-                    h.addAll(headers);
-                    h.remove(HttpHeaders.HOST);
-                })
-                .bodyValue(dto)
-                .exchangeToMono(response -> response.toEntity(byte[].class));
     }
 }
