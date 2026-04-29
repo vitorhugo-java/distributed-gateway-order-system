@@ -42,6 +42,11 @@ public class OrderProxyController {
 <span class="fc" id="L42">        return proxy(request, null);</span>
     }
 
+    @GetMapping(&quot;/v3/api-docs&quot;)
+    public Mono&lt;ResponseEntity&lt;byte[]&gt;&gt; apiDocs(HttpServletRequest request) {
+<span class="fc" id="L47">        return proxy(request, null, &quot;/v3/api-docs&quot;);</span>
+    }
+
     @GetMapping(&quot;/{id}&quot;)
     @Operation(summary = &quot;Buscar pedido por ID&quot;, description = &quot;Retorna os detalhes de um pedido específico&quot;)
     @ApiResponses({
@@ -52,7 +57,7 @@ public class OrderProxyController {
     public Mono&lt;ResponseEntity&lt;byte[]&gt;&gt; findById(
             @Parameter(description = &quot;ID do pedido&quot;) @PathVariable UUID id,
             HttpServletRequest request) {
-<span class="fc" id="L55">        return proxy(request, null);</span>
+<span class="fc" id="L60">        return proxy(request, null);</span>
     }
 
     @PostMapping
@@ -66,7 +71,7 @@ public class OrderProxyController {
     public Mono&lt;ResponseEntity&lt;byte[]&gt;&gt; save(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = &quot;Dados do pedido&quot;) @RequestBody OrderDTO dto,
             HttpServletRequest request) {
-<span class="fc" id="L69">        return proxy(request, dto);</span>
+<span class="fc" id="L74">        return proxy(request, dto);</span>
     }
 
     @PutMapping(&quot;/{id}&quot;)
@@ -81,7 +86,7 @@ public class OrderProxyController {
             @Parameter(description = &quot;ID do pedido&quot;) @PathVariable UUID id,
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = &quot;Dados atualizados do pedido&quot;) @RequestBody OrderDTO dto,
             HttpServletRequest request) {
-<span class="nc" id="L84">        return proxy(request, dto);</span>
+<span class="nc" id="L89">        return proxy(request, dto);</span>
     }
 
     @DeleteMapping(&quot;/{id}&quot;)
@@ -94,7 +99,7 @@ public class OrderProxyController {
     public Mono&lt;ResponseEntity&lt;byte[]&gt;&gt; delete(
             @Parameter(description = &quot;ID do pedido&quot;) @PathVariable UUID id,
             HttpServletRequest request) {
-<span class="nc" id="L97">        return proxy(request, null);</span>
+<span class="nc" id="L102">        return proxy(request, null);</span>
     }
 
     // ─── Order Items ──────────────────────────────────────────────────────
@@ -109,7 +114,7 @@ public class OrderProxyController {
     public Mono&lt;ResponseEntity&lt;byte[]&gt;&gt; findItemsByOrderId(
             @Parameter(description = &quot;ID do pedido&quot;) @PathVariable UUID orderId,
             HttpServletRequest request) {
-<span class="nc" id="L112">        return proxy(request, null);</span>
+<span class="nc" id="L117">        return proxy(request, null);</span>
     }
 
     @PostMapping(&quot;/{orderId}/items&quot;)
@@ -125,32 +130,36 @@ public class OrderProxyController {
             @Parameter(description = &quot;ID do pedido&quot;) @PathVariable UUID orderId,
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = &quot;Dados do item&quot;) @RequestBody OrderItemDTO dto,
             HttpServletRequest request) {
-<span class="nc" id="L128">        return proxy(request, dto);</span>
+<span class="nc" id="L133">        return proxy(request, dto);</span>
     }
 
     // ─── Internal proxy helper ────────────────────────────────────────────
 
     private Mono&lt;ResponseEntity&lt;byte[]&gt;&gt; proxy(HttpServletRequest request, Object body) {
-<span class="fc" id="L134">        String path = request.getRequestURI();</span>
-<span class="pc bpc" id="L135" title="1 of 2 branches missed.">        String query = request.getQueryString() != null ? &quot;?&quot; + request.getQueryString() : &quot;&quot;;</span>
+<span class="fc" id="L139">        return proxy(request, body, request.getRequestURI());</span>
+    }
 
-<span class="fc" id="L137">        HttpHeaders forwardHeaders = new HttpHeaders();</span>
-<span class="fc" id="L138">        Collections.list(request.getHeaderNames()).forEach(name -&gt; {</span>
-<span class="pc bpc" id="L139" title="1 of 2 branches missed.">            if (!name.equalsIgnoreCase(HttpHeaders.HOST)) {</span>
-<span class="fc" id="L140">                Collections.list(request.getHeaders(name))</span>
-<span class="fc" id="L141">                        .forEach(value -&gt; forwardHeaders.add(name, value));</span>
+    private Mono&lt;ResponseEntity&lt;byte[]&gt;&gt; proxy(HttpServletRequest request, Object body, String targetPath) {
+<span class="fc" id="L143">        String path = targetPath;</span>
+<span class="pc bpc" id="L144" title="1 of 2 branches missed.">        String query = request.getQueryString() != null ? &quot;?&quot; + request.getQueryString() : &quot;&quot;;</span>
+
+<span class="fc" id="L146">        HttpHeaders forwardHeaders = new HttpHeaders();</span>
+<span class="fc" id="L147">        Collections.list(request.getHeaderNames()).forEach(name -&gt; {</span>
+<span class="pc bpc" id="L148" title="1 of 2 branches missed.">            if (!name.equalsIgnoreCase(HttpHeaders.HOST)) {</span>
+<span class="fc" id="L149">                Collections.list(request.getHeaders(name))</span>
+<span class="fc" id="L150">                        .forEach(value -&gt; forwardHeaders.add(name, value));</span>
             }
-<span class="fc" id="L143">        });</span>
+<span class="fc" id="L152">        });</span>
 
-<span class="fc" id="L145">        WebClient.RequestBodySpec bodySpec = webClient</span>
-<span class="fc" id="L146">                .method(HttpMethod.valueOf(request.getMethod()))</span>
-<span class="fc" id="L147">                .uri(path + query)</span>
-<span class="fc" id="L148">                .headers(h -&gt; h.addAll(forwardHeaders));</span>
+<span class="fc" id="L154">        WebClient.RequestBodySpec bodySpec = webClient</span>
+<span class="fc" id="L155">                .method(HttpMethod.valueOf(request.getMethod()))</span>
+<span class="fc" id="L156">                .uri(path + query)</span>
+<span class="fc" id="L157">                .headers(h -&gt; h.addAll(forwardHeaders));</span>
 
-<span class="fc bfc" id="L150" title="All 2 branches covered.">        if (body != null) {</span>
-<span class="fc" id="L151">            return bodySpec.bodyValue(body).exchangeToMono(response -&gt; response.toEntity(byte[].class));</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">        if (body != null) {</span>
+<span class="fc" id="L160">            return bodySpec.bodyValue(body).exchangeToMono(response -&gt; response.toEntity(byte[].class));</span>
         }
-<span class="fc" id="L153">        return bodySpec.exchangeToMono(response -&gt; response.toEntity(byte[].class));</span>
+<span class="fc" id="L162">        return bodySpec.exchangeToMono(response -&gt; response.toEntity(byte[].class));</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>
