@@ -95,6 +95,10 @@ We implement stateless authentication using JWT.
 
 ---
 
+## Requests Exemples
+
+---
+
 ## Testing Credentials
 
 - Username: admin
@@ -104,6 +108,6 @@ We implement stateless authentication using JWT.
 
 ## Architectural Decisions
 
-- Manual Proxying: WebClient used for fine-grained control over headers and error handling
+- Manual Proxying (instead of use Spring Cloud Gateway): WebClient used for fine-grained control over headers and error handling
 - Database per Service: isolated databases to enforce shared-nothing architecture
 - Multi-Stage Build: optimized Docker images with reduced size and attack surface  
