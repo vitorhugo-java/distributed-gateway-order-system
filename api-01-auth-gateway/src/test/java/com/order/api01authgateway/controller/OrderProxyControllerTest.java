@@ -1,61 +1,117 @@
 package com.order.api01authgateway.controller;
 
-import org.junit.jupiter.api.BeforeEach;
+import com.order.api01authgateway.security.JwtService;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.client.MockMvcWebTestClient;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import java.io.IOException;
 
-@ExtendWith(MockitoExtension.class)
-class OrderProxyControllerTest {
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-    @Mock
-    private WebClient webClient;
+/**
+ * <h1>OrderProxyControllerTest</h1>
+ * <p>
+ * Tests the {@link OrderProxyController} by simulating a downstream Orders API using
+ * {@link MockWebServer}. Ensures requests are correctly proxied and responses are
+ * properly returned to clients without loading the full application context.
+ * </p>
+ * <p>
+ * Implements the WebMvcTest slice pattern with Spring Boot 4.0.x and Spring Security 7.x.
+ * </p>
+ */
+@WebMvcTest(OrderProxyController.class)
+@AutoConfigureMockMvc(addFilters = false)
+public class OrderProxyControllerTest {
 
-    @InjectMocks
-    private OrderProxyController orderProxyController;
+    @Autowired
+    private MockMvc mockMvc;
 
-    private WebTestClient webTestClient;
+    @MockitoBean
+    private JwtService jwtService;
 
-    @BeforeEach
-    void setUp() {
-        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(orderProxyController).build();
-        webTestClient = MockMvcWebTestClient.bindTo(mockMvc).build();
+    @MockitoBean
+    private AuthenticationProvider authenticationProvider;
+
+    private static MockWebServer mockWebServer;
+
+    /**
+     * Internal test configuration providing a {@link WebClient} bean that points to
+     * the {@link MockWebServer} instance for intercepting downstream API calls.
+     */
+    @TestConfiguration
+    static class OrderProxyTestConfiguration {
+        @Bean
+        public WebClient webClient(WebClient.Builder builder) {
+            return builder.baseUrl(mockWebServer.url("/").toString()).build();
+        }
     }
 
+    /**
+     * Initializes and starts the {@link MockWebServer} before all tests execute.
+     *
+     * @throws IOException if the server fails to initialize
+     */
+    @BeforeAll
+    public static void setUp() throws IOException {
+        mockWebServer = new MockWebServer();
+        mockWebServer.start();
+    }
+
+    /**
+     * Gracefully shuts down the {@link MockWebServer} after all tests complete.
+     *
+     * @throws IOException if the server fails to shut down
+     */
+    @AfterAll
+    public static void tearDown() throws IOException {
+        mockWebServer.shutdown();
+    }
+
+    /**
+     * Dynamically registers the {@link MockWebServer} base URL as an application property
+     * to override the downstream API endpoint for testing purposes.
+     *
+     * @param registry the dynamic property registry provided by Spring Test
+     */
+    @DynamicPropertySource
+    public static void properties(DynamicPropertyRegistry registry) {
+        registry.add("application.gateway.downstream-url", () -> mockWebServer.url("/").toString());
+    }
+
+    /**
+     * Validates that incoming HTTP GET requests are correctly proxied to the
+     * downstream {@link MockWebServer} and responses are returned to the user.
+     *
+     * @throws Exception if any error occurs during request execution
+     */
     @Test
-    void shouldProxyRequest() {
-        WebClient.RequestBodyUriSpec requestBodyUriSpec = mock(WebClient.RequestBodyUriSpec.class);
-        WebClient.RequestBodySpec requestBodySpec = mock(WebClient.RequestBodySpec.class);
-        WebClient.RequestHeadersSpec requestHeadersSpec = mock(WebClient.RequestHeadersSpec.class);
-        WebClient.ResponseSpec responseSpec = mock(WebClient.ResponseSpec.class);
+    public void shouldProxyRequest() throws Exception {
+        mockWebServer.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .setBody("proxied"));
 
-        when(webClient.method(HttpMethod.GET)).thenReturn(requestBodyUriSpec);
-        when(requestBodyUriSpec.uri(anyString())).thenReturn(requestBodySpec);
-        when(requestBodySpec.header(anyString(), any())).thenReturn(requestBodySpec);
-        when(requestBodySpec.retrieve()).thenReturn(responseSpec);
-        when(responseSpec.toEntity(byte[].class)).thenReturn(Mono.just(ResponseEntity.ok("proxied".getBytes())));
-
-        webTestClient.get()
-                .uri("/api/orders/test")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer token")
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(String.class).isEqualTo("proxied");
+        mockMvc.perform(get("/api/orders/test")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer token"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("proxied"));
     }
 }

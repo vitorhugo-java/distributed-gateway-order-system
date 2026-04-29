@@ -9,9 +9,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -20,9 +21,20 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * <h1>AuthControllerTest</h1>
+ * <p>
+ * Performs unit testing for the {@link AuthController} to validate authentication workflows,
+ * including successful logins, invalid credentials, and malformed request handling.
+ * </p>
+ * <p>
+ * Utilizes Spring Boot 4.0.x WebMvcTest slice pattern with {@code @MockitoBean} for
+ * dependency mocking in compliance with Spring Security 7.x standards.
+ * </p>
+ */
 @WebMvcTest(AuthController.class)
 @AutoConfigureMockMvc(addFilters = false)
-class AuthControllerTest {
+public class AuthControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -30,14 +42,23 @@ class AuthControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean
+    @MockitoBean
     private AuthService authService;
 
-    @MockBean
+    @MockitoBean
     private JwtService jwtService;
 
+    @MockitoBean
+    private AuthenticationProvider authenticationProvider;
+
+    /**
+     * Tests the login endpoint with valid credentials.
+     * Verifies HTTP 200 OK response and correct token response structure.
+     *
+     * @throws Exception if any error occurs during request execution
+     */
     @Test
-    void login_WithValidCredentials_ShouldReturn200() throws Exception {
+    public void login_WithValidCredentials_ShouldReturn200() throws Exception {
         LoginRequest request = new LoginRequest("test@example.com", "password");
         TokenResponse response = new TokenResponse("jwt-token", "Bearer", 3600L);
 
@@ -52,8 +73,14 @@ class AuthControllerTest {
                 .andExpect(jsonPath("$.expiresIn").value(3600));
     }
 
+    /**
+     * Tests the login endpoint with invalid credentials.
+     * Verifies HTTP 401 Unauthorized response is returned.
+     *
+     * @throws Exception if any error occurs during request execution
+     */
     @Test
-    void login_WithInvalidCredentials_ShouldReturn401() throws Exception {
+    public void login_WithInvalidCredentials_ShouldReturn401() throws Exception {
         LoginRequest request = new LoginRequest("wrong@example.com", "wrong");
 
         when(authService.authenticate(any(LoginRequest.class)))
@@ -65,8 +92,14 @@ class AuthControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
+    /**
+     * Tests the login endpoint with malformed email format.
+     * Verifies HTTP 400 Bad Request response is returned.
+     *
+     * @throws Exception if any error occurs during request execution
+     */
     @Test
-    void login_WithInvalidEmail_ShouldReturn400() throws Exception {
+    public void login_WithInvalidEmail_ShouldReturn400() throws Exception {
         LoginRequest request = new LoginRequest("invalid-email", "password");
 
         mockMvc.perform(post("/auth/login")
