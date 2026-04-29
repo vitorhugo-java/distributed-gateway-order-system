@@ -20,8 +20,8 @@ Key architectural highlights include:
 
 ---
 
-- Javadoc + TestReports + Coverage Tests Reports: 
-- Production URL:
+- Javadoc + TestReports + Coverage Tests Reports: https://vitorhugo-java.github.io/distributed-gateway-order-system/
+- Production URL: 
 
 ---
 

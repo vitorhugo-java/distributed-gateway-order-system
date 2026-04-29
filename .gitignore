@@ -62,3 +62,6 @@ Thumbs.db
 .boot-webmvc-contents.txt
 .boot-test-autoconfigure-contents.txt
 .boot-artifact-names.txt
+.idea/misc.xml
+.idea/compiler.xml
+/.idea

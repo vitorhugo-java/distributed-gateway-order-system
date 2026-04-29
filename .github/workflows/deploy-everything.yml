@@ -25,27 +25,60 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Build Reports (Resilient)
+      - name: Build Reports (All modules)
         continue-on-error: true
         run: |
-          ./gradlew :api-01-auth-gateway:test :api-01-auth-gateway:jacocoTestReport :api-01-auth-gateway:javadoc \
-                    :api-02-orders-crud:test :api-02-orders-crud:jacocoTestReport :api-02-orders-crud:javadoc --no-daemon
+          ./gradlew test jacocoTestReport javadoc --no-daemon
 
-      - name: Organize Reports
+        - name: Consolidate Reports into build/docs/reports
         run: |
-          rm -rf public-site
-          mkdir -p public-site/auth-gateway/docs public-site/auth-gateway/tests public-site/auth-gateway/coverage
-          mkdir -p public-site/order-system/docs public-site/order-system/tests public-site/order-system/coverage
+          rm -rf build/docs/reports
+          mkdir -p build/docs/reports/auth-gateway/docs build/docs/reports/auth-gateway/tests build/docs/reports/auth-gateway/coverage
+          mkdir -p build/docs/reports/order-system/docs build/docs/reports/order-system/tests build/docs/reports/order-system/coverage
 
           # Organize Auth Gateway
-          cp -r api-01-auth-gateway/build/docs/javadoc/* public-site/auth-gateway/docs/ || true
-          cp -r api-01-auth-gateway/build/reports/tests/test/* public-site/auth-gateway/tests/ || true
-          cp -r api-01-auth-gateway/build/reports/jacoco/test/html/* public-site/auth-gateway/coverage/ || true
+          cp -r api-01-auth-gateway/build/docs/javadoc/* build/docs/reports/auth-gateway/docs/ || true
+          cp -r api-01-auth-gateway/build/reports/tests/test/* build/docs/reports/auth-gateway/tests/ || true
+          cp -r api-01-auth-gateway/build/reports/jacoco/test/html/* build/docs/reports/auth-gateway/coverage/ || true
 
           # Organize Order System
-          cp -r api-02-orders-crud/build/docs/javadoc/* public-site/order-system/docs/ || true
-          cp -r api-02-orders-crud/build/reports/tests/test/* public-site/order-system/tests/ || true
-          cp -r api-02-orders-crud/build/reports/jacoco/test/html/* public-site/order-system/coverage/ || true
+          cp -r api-02-orders-crud/build/docs/javadoc/* build/docs/reports/order-system/docs/ || true
+          cp -r api-02-orders-crud/build/reports/tests/test/* build/docs/reports/order-system/tests/ || true
+          cp -r api-02-orders-crud/build/reports/jacoco/test/html/* build/docs/reports/order-system/coverage/ || true
+
+          # Create a small dashboard index
+          mkdir -p build/docs/reports
+          cat <<EOF > build/docs/reports/index.html
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="UTF-8">
+            <title>Project Dashboard</title>
+            <style>
+              body { font-family: sans-serif; background-color: #121212; color: #e0e0e0; padding: 2rem; }
+              h1 { border-bottom: 1px solid #333; padding-bottom: 1rem; }
+              .module { margin-bottom: 2rem; border: 1px solid #333; padding: 1rem; border-radius: 8px; }
+              a { color: #bb86fc; text-decoration: none; display: inline-block; margin-right: 1rem; }
+              a:hover { text-decoration: underline; }
+            </style>
+          </head>
+          <body>
+            <h1>Project Dashboard</h1>
+            <div class="module">
+              <h2>Auth Gateway</h2>
+              <a href="auth-gateway/docs/index.html">Documentation</a>
+              <a href="auth-gateway/tests/index.html">Test Reports</a>
+              <a href="auth-gateway/coverage/index.html">Coverage</a>
+            </div>
+            <div class="module">
+              <h2>Order System</h2>
+              <a href="order-system/docs/index.html">Documentation</a>
+              <a href="order-system/tests/index.html">Test Reports</a>
+              <a href="order-system/coverage/index.html">Coverage</a>
+            </div>
+          </body>
+          </html>
+          EOF
 
       - name: Generate Dashboard
         run: |
@@ -83,8 +116,14 @@ jobs:
           </html>
           EOF
 
+      - name: Ensure .nojekyll and Deploy to GitHub Pages
+        run: |
+          # ensure .nojekyll so GitHub Pages serves directories starting with underscores
+          touch build/docs/reports/.nojekyll
+        shell: bash
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public-site
+          publish_dir: ./build/docs/reports
