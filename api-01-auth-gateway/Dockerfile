@@ -38,6 +38,8 @@ ENTRYPOINT ["java", "-jar", "app.jar"]
 FROM ghcr.io/graalvm/native-image-community:21 AS build-native
 WORKDIR /app
 
+RUN microdnf install -y findutils && microdnf clean all
+
 COPY gradlew .
 COPY gradle/ gradle/
 COPY build.gradle .
