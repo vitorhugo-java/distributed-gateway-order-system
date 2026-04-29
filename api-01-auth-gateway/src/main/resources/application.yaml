@@ -42,6 +42,14 @@ springdoc:
 server:
   port: 8080
 
+management:
+  server:
+    port: 8002
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus, metrics
+
 logging:
   level:
     org.springframework.security: DEBUG
