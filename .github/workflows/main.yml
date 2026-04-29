@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "api-01-auth-gateway/**"
+      - "api-02-orders-crud/**"
       - "build.gradle"
       - "settings.gradle"
       - ".github/workflows/main.yml"
@@ -12,6 +13,7 @@ on:
     branches: [main]
     paths:
       - "api-01-auth-gateway/**"
+      - "api-02-orders-crud/**"
       - "build.gradle"
       - "settings.gradle"
   workflow_dispatch:
@@ -46,7 +48,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Run unit tests
-        run: ./gradlew :api-01-auth-gateway:test --no-daemon
+        run: ./gradlew test jacocoTestReport --no-daemon
 
       - name: Upload test report on failure
         if: failure()

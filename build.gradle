@@ -7,6 +7,8 @@ plugins {
     id 'jacoco'
 }
 
+import org.gradle.testing.jacoco.tasks.JacocoReport
+
 subprojects {
     apply plugin: 'java'
     apply plugin: 'war'
@@ -19,12 +21,14 @@ subprojects {
     version = '0.0.1-SNAPSHOT'
 
     def excludedPatterns = [
+            "**/*.dto.*",
+            "**/*.entity.*",
+            "**/*.config.*",
+            "**/*Application.class",
             "**/dto/**",
             "**/entity/**",
             "**/config/**",
-            "**/Api*Application.class",
-            "**/ServletInitializer.class",
-            "**/exception/*Exception.class"
+            "**/*Application.java"
     ]
 
     java {
@@ -38,11 +42,10 @@ subprojects {
     }
 
     jacoco {
-        toolVersion = "0.8.12"
+        toolVersion = '0.8.12'
     }
 
     dependencies {
-        // Core Spring & JPA
         implementation 'org.springframework.data:spring-data-commons'
         implementation 'org.springframework.boot:spring-boot-h2console'
         implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -52,18 +55,15 @@ subprojects {
         implementation 'org.flywaydb:flyway-database-postgresql'
         implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
-        // Boilerplate & Dev
         compileOnly 'org.projectlombok:lombok'
         implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.3'
         annotationProcessor 'org.projectlombok:lombok'
         annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
         developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
-        // Database Runtimes
         runtimeOnly 'org.postgresql:postgresql'
         providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat-runtime'
 
-        // Tests
         testImplementation 'org.springframework.boot:spring-boot-starter-test'
         testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
         testImplementation 'org.springframework.boot:spring-boot-starter-flyway-test'
@@ -77,11 +77,11 @@ subprojects {
 
     tasks.named('test') {
         useJUnitPlatform()
-        finalizedBy jacocoTestReport
+        finalizedBy tasks.named('jacocoTestReport')
     }
 
-    jacocoTestReport {
-        dependsOn test
+    tasks.named('jacocoTestReport') {
+        dependsOn tasks.named('test')
         reports {
             xml.required = true
             html.required = true
@@ -93,8 +93,8 @@ subprojects {
         }
     }
 
-    jacocoTestCoverageVerification {
-        dependsOn jacocoTestReport
+    tasks.named('jacocoTestCoverageVerification') {
+        dependsOn tasks.named('jacocoTestReport')
         violationRules {
             rule {
                 limit {
@@ -109,5 +109,54 @@ subprojects {
         }
     }
 
-    check.dependsOn jacocoTestCoverageVerification
+    tasks.named('check') {
+        dependsOn tasks.named('jacocoTestCoverageVerification')
+    }
+}
+
+def aggregateExcludedPatterns = [
+        '**/*.dto.*',
+        '**/*.entity.*',
+        '**/*.config.*',
+        '**/*Application.class',
+        '**/*Application.java',
+        '**/dto/**',
+        '**/entity/**',
+        '**/config/**'
+]
+
+tasks.register('aggregateJacocoReport', JacocoReport) {
+    dependsOn(subprojects.collect { it.tasks.named('test') })
+    executionData.from(fileTree(rootDir).include(
+            'api-01-auth-gateway/build/jacoco/test.exec',
+            'api-02-orders-crud/build/jacoco/test.exec'
+    ))
+
+    classDirectories.setFrom(files(subprojects.collect { project ->
+        fileTree(dir: "${project.layout.buildDirectory.get().asFile}/classes/java/main", exclude: aggregateExcludedPatterns)
+    }))
+
+    sourceDirectories.setFrom(files(subprojects.collect { project ->
+        project.sourceSets.main.allSource.srcDirs
+    }))
+
+    additionalSourceDirs.setFrom(sourceDirectories)
+
+    reports {
+        html.required = true
+        xml.required = true
+        csv.required = false
+        html.outputLocation = layout.buildDirectory.dir('reports/jacoco/aggregateJacocoReport')
+        xml.outputLocation = layout.buildDirectory.file('reports/jacoco/aggregateJacocoReport.xml')
+    }
+}
+
+tasks.register('aggregateJavadoc', Javadoc) {
+    dependsOn(subprojects.collect { it.tasks.named('classes') })
+    source(subprojects.collect { it.sourceSets.main.allJava })
+    classpath = files(subprojects.collect { it.sourceSets.main.compileClasspath })
+    destinationDir = layout.buildDirectory.dir('docs/aggregated-javadoc').get().asFile
+    options.encoding = 'UTF-8'
+    options.charSet = 'UTF-8'
+    options.memberLevel = JavadocMemberLevel.PROTECTED
 }
