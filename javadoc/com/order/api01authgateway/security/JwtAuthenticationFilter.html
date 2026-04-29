@@ -160,12 +160,15 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Intercepts the request to perform JWT authentication.</div>
 </div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#shouldNotFilterAsyncDispatch()" class="member-name-link">shouldNotFilterAsyncDispatch</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-org.springframework.web.filter.OncePerRequestFilter">Methods inherited from class&nbsp;org.springframework.web.filter.OncePerRequestFilter</h3>
-<code>doFilter, doFilterNestedErrorDispatch, getAlreadyFilteredAttributeName, isAsyncDispatch, isAsyncStarted, shouldNotFilter, shouldNotFilterAsyncDispatch, shouldNotFilterErrorDispatch</code></div>
+<code>doFilter, doFilterNestedErrorDispatch, getAlreadyFilteredAttributeName, isAsyncDispatch, isAsyncStarted, shouldNotFilter, shouldNotFilterErrorDispatch</code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-org.springframework.web.filter.GenericFilterBean">Methods inherited from class&nbsp;org.springframework.web.filter.GenericFilterBean</h3>
 <code>addRequiredProperty, afterPropertiesSet, createEnvironment, destroy, getEnvironment, getFilterConfig, getFilterName, getServletContext, init, initBeanWrapper, initFilterBean, setBeanName, setEnvironment, setServletContext</code></div>
@@ -197,6 +200,16 @@ loadScripts(document, 'script');</script>
 <section class="method-details" id="method-detail">
 <h2>Method Details</h2>
 <ul class="member-list">
+<li>
+<section class="detail" id="shouldNotFilterAsyncDispatch()">
+<h3>shouldNotFilterAsyncDispatch</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">shouldNotFilterAsyncDispatch</span>()</div>
+<dl class="notes">
+<dt>Overrides:</dt>
+<dd><code>shouldNotFilterAsyncDispatch</code>&nbsp;in class&nbsp;<code>org.springframework.web.filter.OncePerRequestFilter</code></dd>
+</dl>
+</section>
+</li>
 <li>
 <section class="detail" id="doFilterInternal(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse,jakarta.servlet.FilterChain)">
 <h3>doFilterInternal</h3>
