@@ -29,6 +29,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -98,6 +99,37 @@ class OrderControllerTest {
         when(orderService.findById(id)).thenThrow(new EntityNotFoundException("Order not found"));
 
         mockMvc.perform(get("/api/orders/{id}", id))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser
+    void update_WithValidData_ShouldReturn200() throws Exception {
+        UUID id = UUID.randomUUID();
+        OrderDTO dto = new OrderDTO(null, "John Doe", "john@example.com", LocalDateTime.now(), OrderStatus.PAID, BigDecimal.TEN);
+        OrderDTO updatedDto = new OrderDTO(id, "John Doe", "john@example.com", dto.orderDate(), OrderStatus.PAID, BigDecimal.TEN);
+
+        when(orderService.update(any(UUID.class), any(OrderDTO.class))).thenReturn(updatedDto);
+
+        mockMvc.perform(put("/api/orders/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(id.toString()))
+                .andExpect(jsonPath("$.status").value("PAID"));
+    }
+
+    @Test
+    @WithMockUser
+    void update_WhenNotFound_ShouldReturn404() throws Exception {
+        UUID id = UUID.randomUUID();
+        OrderDTO dto = new OrderDTO(null, "John Doe", "john@example.com", LocalDateTime.now(), OrderStatus.PENDING, BigDecimal.ZERO);
+
+        when(orderService.update(any(UUID.class), any(OrderDTO.class))).thenThrow(new EntityNotFoundException("Order not found"));
+
+        mockMvc.perform(put("/api/orders/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isNotFound());
     }
 }

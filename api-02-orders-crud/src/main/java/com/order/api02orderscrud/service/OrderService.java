@@ -40,6 +40,21 @@ public class OrderService {
     }
 
     @Transactional
+    public OrderDTO update(UUID id, OrderDTO dto) {
+        Order existingOrder = orderRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Order not found"));
+
+        existingOrder.setCustomerName(dto.customerName());
+        existingOrder.setCustomerEmail(dto.customerEmail());
+        existingOrder.setOrderDate(dto.orderDate() != null ? dto.orderDate() : existingOrder.getOrderDate());
+        existingOrder.setStatus(dto.status());
+        existingOrder.setTotalAmount(dto.totalAmount());
+
+        Order updatedOrder = orderRepository.save(existingOrder);
+        return orderMapper.toDto(updatedOrder);
+    }
+
+    @Transactional
     public void delete(UUID id) {
         if (!orderRepository.existsById(id)) {
             throw new EntityNotFoundException("Order not found");

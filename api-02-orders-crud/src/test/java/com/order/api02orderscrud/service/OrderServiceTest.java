@@ -110,6 +110,46 @@ public class OrderServiceTest {
     }
 
     @Test
+    public void testUpdateShouldPersistChanges() {
+        UUID id = UUID.randomUUID();
+        LocalDateTime orderDate = LocalDateTime.now();
+        OrderDTO dto = new OrderDTO(null, "Jane", "jane@example.com", orderDate, OrderStatus.PAID, BigDecimal.TEN);
+
+        Order existing = new Order();
+        existing.setId(id);
+        existing.setCustomerName("John");
+        existing.setCustomerEmail("john@example.com");
+        existing.setOrderDate(orderDate.minusDays(1));
+        existing.setStatus(OrderStatus.PENDING);
+        existing.setTotalAmount(BigDecimal.ONE);
+
+        OrderDTO updatedDto = new OrderDTO(id, "Jane", "jane@example.com", orderDate, OrderStatus.PAID, BigDecimal.TEN);
+
+        when(orderRepository.findById(id)).thenReturn(Optional.of(existing));
+        when(orderRepository.save(existing)).thenReturn(existing);
+        when(orderMapper.toDto(existing)).thenReturn(updatedDto);
+
+        OrderDTO result = orderService.update(id, dto);
+
+        assertEquals(id, result.id());
+        assertEquals("Jane", result.customerName());
+        assertEquals("jane@example.com", result.customerEmail());
+        assertEquals(OrderStatus.PAID, result.status());
+        assertEquals(BigDecimal.TEN, result.totalAmount());
+    }
+
+    @Test
+    public void testUpdateWhenMissingShouldThrow() {
+        UUID id = UUID.randomUUID();
+        OrderDTO dto = new OrderDTO(null, "Jane", "jane@example.com", LocalDateTime.now(), OrderStatus.PAID, BigDecimal.TEN);
+        when(orderRepository.findById(id)).thenReturn(Optional.empty());
+
+        EntityNotFoundException ex = assertThrows(EntityNotFoundException.class, () -> orderService.update(id, dto));
+
+        assertEquals("Order not found", ex.getMessage());
+    }
+
+    @Test
     public void testDeleteShouldRemoveWhenExists() {
         UUID id = UUID.randomUUID();
         when(orderRepository.existsById(id)).thenReturn(true);

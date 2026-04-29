@@ -59,6 +59,18 @@ public class OrderController {
         return orderService.save(dto);
     }
 
+    @PutMapping("/{id}")
+    @Operation(summary = "Atualizar pedido", description = "Atualiza os dados de um pedido existente")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Atualizado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Erro de validação"),
+            @ApiResponse(responseCode = "401", description = "Não autorizado"),
+            @ApiResponse(responseCode = "404", description = "Pedido não encontrado")
+    })
+    public OrderDTO update(@PathVariable UUID id, @Valid @RequestBody OrderDTO dto) {
+        return orderService.update(id, dto);
+    }
+
     @DeleteMapping("/{id}")
     @Operation(summary = "Excluir pedido", description = "Remove um pedido pelo seu ID")
     @ApiResponses({
