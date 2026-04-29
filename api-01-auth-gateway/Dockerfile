@@ -49,7 +49,10 @@ COPY api-02-orders-crud/build.gradle  api-02-orders-crud/build.gradle
 COPY api-01-auth-gateway/src/ api-01-auth-gateway/src/
 COPY api-02-orders-crud/src/  api-02-orders-crud/src/
 
-RUN ./gradlew :api-01-auth-gateway:nativeCompile -x test --no-daemon -Porg.gradle.java.installations.auto-download=false -Porg.gradle.java.installations.auto-detect=false
+RUN tr -d '\r' < gradlew > gradlew.unix && mv gradlew.unix gradlew && chmod +x gradlew \
+    && ./gradlew :api-01-auth-gateway:nativeCompile -x test --no-daemon \
+        -Porg.gradle.java.installations.auto-download=false \
+        -Porg.gradle.java.installations.auto-detect=false
 
 FROM busybox:glibc AS native
 WORKDIR /app
