@@ -100,11 +100,181 @@ We implement stateless authentication using JWT.
 
 ## Requests Exemples
 
+### 1. Login
+
+```bash
+curl -X POST "http://localhost:8080/auth/login" \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -d '{
+    "email": "admin@example.com",
+    "password": "admin123"
+  }'
+```
+
+Response:
+
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiJ9.eyJ...",
+  "type": "Bearer",
+  "expiresIn": 3600000
+}
+```
+
+### 2. Create order
+
+```bash
+curl -X POST "http://localhost:8080/api/orders" \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -H "Authorization: Bearer <TOKEN>" \
+  -d '{
+    "customerName": "README Demo",
+    "customerEmail": "readme.demo@example.com",
+    "orderDate": "2026-04-29T23:24:54",
+    "status": "PENDING",
+    "totalAmount": 149.90
+  }'
+```
+
+Response:
+
+```json
+{
+  "id": "0a60001a-9ddb-1157-819d-db8f4bab0004",
+  "customerName": "README Demo",
+  "customerEmail": "readme.demo@example.com",
+  "orderDate": "2026-04-29T23:24:54",
+  "status": "PENDING",
+  "totalAmount": 149.9
+}
+```
+
+### 3. List orders
+
+```bash
+curl -X GET "http://localhost:8080/api/orders" \
+  -H "Accept: application/json" \
+  -H "Authorization: Bearer <TOKEN>"
+```
+
+Response:
+
+```json
+{
+  "content": [
+    {
+      "id": "0a60001a-9ddb-1157-819d-db8f4bab0004",
+      "customerName": "README Demo",
+      "customerEmail": "readme.demo@example.com",
+      "orderDate": "2026-04-29T23:24:54",
+      "status": "PENDING",
+      "totalAmount": 149.9
+    }
+  ],
+  "empty": false,
+  "first": true,
+  "last": true,
+  "number": 0,
+  "numberOfElements": 1,
+  "pageable": {
+    "offset": 0,
+    "pageNumber": 0,
+    "pageSize": 20,
+    "paged": true,
+    "sort": {
+      "empty": true,
+      "sorted": false,
+      "unsorted": true
+    },
+    "unpaged": false
+  },
+  "size": 20,
+  "sort": {
+    "empty": true,
+    "sorted": false,
+    "unsorted": true
+  },
+  "totalElements": 1,
+  "totalPages": 1
+}
+```
+
+### 4. Get order by ID
+
+```bash
+curl -X GET "http://localhost:8080/api/orders/0a60001a-9ddb-1157-819d-db8f4bab0004" \
+  -H "Accept: application/json" \
+  -H "Authorization: Bearer <TOKEN>"
+```
+
+Response:
+
+```json
+{
+  "id": "0a60001a-9ddb-1157-819d-db8f4bab0004",
+  "customerName": "README Demo",
+  "customerEmail": "readme.demo@example.com",
+  "orderDate": "2026-04-29T23:24:54",
+  "status": "PENDING",
+  "totalAmount": 149.9
+}
+```
+
+### 5. Add item to order
+
+```bash
+curl -X POST "http://localhost:8080/api/orders/0a60001a-9ddb-1157-819d-db8f4bab0004/items" \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -H "Authorization: Bearer <TOKEN>" \
+  -d '{
+    "productName": "Mechanical Keyboard",
+    "quantity": 1,
+    "unitPrice": 149.90
+  }'
+```
+
+Response:
+
+```json
+{
+  "id": null,
+  "productName": "Mechanical Keyboard",
+  "quantity": 1,
+  "unitPrice": 149.9,
+  "subtotal": 149.9
+}
+```
+
+### 6. List order items
+
+```bash
+curl -X GET "http://localhost:8080/api/orders/0a60001a-9ddb-1157-819d-db8f4bab0004/items" \
+  -H "Accept: application/json" \
+  -H "Authorization: Bearer <TOKEN>"
+```
+
+Response:
+
+```json
+[
+  {
+    "id": "0a60001a-9ddb-1157-819d-db8f4c0f0005",
+    "productName": "Mechanical Keyboard",
+    "quantity": 1,
+    "unitPrice": 149.9,
+    "subtotal": 149.9
+  }
+]
+```
+
 ---
 
 ## Testing Credentials
 
-- Username: admin
+- Email: admin@example.com
 - Password: admin123
 
 ---
