@@ -14,9 +14,8 @@ A high-performance, distributed ecosystem designed for secure order management. 
 
 Key architectural highlights include:
 * **Zero-Trust Edge Security:** Stateless JWT authentication and manual proxy routing via Spring WebFlux `WebClient`.
-* **High Performance:** Optimized for cloud-native deployment using **GraalVM Native Image**, significantly reducing startup time and memory footprint.
 * **Modern Persistence:** Powered by **PostgreSQL 17**, utilizing time-ordered `UUID v7` for optimal B-Tree index performance and anti-fragmentation.
-* **Automated Lifecycle:** Full CI/CD pipeline orchestrated with GitHub Actions for testing, native image building (GHCR), and automated SSH deployments.
+* **Automated Image Publish:** Pipeline orchestrated with GitHub Actions for testing and publish JVM images.
 
 ---
 
@@ -122,5 +121,5 @@ We implement stateless authentication using JWT.
 
 ## Pipelines GitHub Actions
 - **Qodana**: Static code analysis to ensure code quality and maintainability.
-- **images-multi-module.yml**: Build and publish GraalVM native images to GitHub Container Registry (GHCR) for all microservices.
+- **images-multi-module.yml**: Build and publish JVM images to GitHub Container Registry (GHCR) for all microservices.
 - **deploy-docs.yml**: Deploy Docs and Coverage Reports to GitHub Pages.
