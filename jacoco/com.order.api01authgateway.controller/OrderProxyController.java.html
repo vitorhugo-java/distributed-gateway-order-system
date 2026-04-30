@@ -2,14 +2,21 @@
 
 import com.order.api01authgateway.dto.OrderDTO;
 import com.order.api01authgateway.dto.OrderItemDTO;
+import com.order.api01authgateway.dto.PageOrderDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -36,58 +43,74 @@ public class OrderProxyController {
     @GetMapping
     @Operation(summary = &quot;Listar pedidos&quot;, description = &quot;Retorna uma lista paginada de todos os pedidos&quot;)
     @ApiResponses({
-            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Sucesso&quot;),
+            @ApiResponse(
+                    responseCode = &quot;200&quot;,
+                    description = &quot;Sucesso&quot;,
+                    content = @Content(schema = @Schema(implementation = PageOrderDTO.class))
+            ),
             @ApiResponse(responseCode = &quot;401&quot;, description = &quot;Não autorizado&quot;)
     })
-    public Mono&lt;ResponseEntity&lt;byte[]&gt;&gt; findAll(HttpServletRequest request) {
-<span class="fc" id="L43">        return proxy(request, null, request.getRequestURI(), true);</span>
+    public Mono&lt;ResponseEntity&lt;byte[]&gt;&gt; findAll(@ParameterObject Pageable pageable, HttpServletRequest request) {
+<span class="fc" id="L54">        return proxy(request, null, request.getRequestURI(), true);</span>
     }
 
     @GetMapping(&quot;/v3/api-docs&quot;)
     public Mono&lt;ResponseEntity&lt;byte[]&gt;&gt; apiDocs(HttpServletRequest request) {
-<span class="fc" id="L48">        return proxy(request, null, &quot;/v3/api-docs&quot;, false);</span>
+<span class="fc" id="L59">        return proxy(request, null, &quot;/v3/api-docs&quot;, false);</span>
     }
 
     @GetMapping(&quot;/{id}&quot;)
     @Operation(summary = &quot;Buscar pedido por ID&quot;, description = &quot;Retorna os detalhes de um pedido específico&quot;)
     @ApiResponses({
-            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Sucesso&quot;),
+            @ApiResponse(
+                    responseCode = &quot;200&quot;,
+                    description = &quot;Sucesso&quot;,
+                    content = @Content(schema = @Schema(implementation = OrderDTO.class))
+            ),
             @ApiResponse(responseCode = &quot;401&quot;, description = &quot;Não autorizado&quot;),
             @ApiResponse(responseCode = &quot;404&quot;, description = &quot;Pedido não encontrado&quot;)
     })
     public Mono&lt;ResponseEntity&lt;byte[]&gt;&gt; findById(
             @Parameter(description = &quot;ID do pedido&quot;) @PathVariable UUID id,
             HttpServletRequest request) {
-<span class="fc" id="L61">        return proxy(request, null, request.getRequestURI(), true);</span>
+<span class="fc" id="L76">        return proxy(request, null, request.getRequestURI(), true);</span>
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = &quot;Criar novo pedido&quot;, description = &quot;Cria um novo pedido no sistema&quot;)
     @ApiResponses({
-            @ApiResponse(responseCode = &quot;201&quot;, description = &quot;Criado com sucesso&quot;),
+            @ApiResponse(
+                    responseCode = &quot;201&quot;,
+                    description = &quot;Criado com sucesso&quot;,
+                    content = @Content(schema = @Schema(implementation = OrderDTO.class))
+            ),
             @ApiResponse(responseCode = &quot;400&quot;, description = &quot;Erro de validação&quot;),
             @ApiResponse(responseCode = &quot;401&quot;, description = &quot;Não autorizado&quot;)
     })
     public Mono&lt;ResponseEntity&lt;byte[]&gt;&gt; save(
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = &quot;Dados do pedido&quot;) @RequestBody OrderDTO dto,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = &quot;Dados do pedido&quot;) @Valid @RequestBody OrderDTO dto,
             HttpServletRequest request) {
-<span class="fc" id="L75">        return proxy(request, dto, request.getRequestURI(), true);</span>
+<span class="fc" id="L94">        return proxy(request, dto, request.getRequestURI(), true);</span>
     }
 
     @PutMapping(&quot;/{id}&quot;)
     @Operation(summary = &quot;Atualizar pedido&quot;, description = &quot;Atualiza os dados de um pedido existente&quot;)
     @ApiResponses({
-            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Atualizado com sucesso&quot;),
+            @ApiResponse(
+                    responseCode = &quot;200&quot;,
+                    description = &quot;Atualizado com sucesso&quot;,
+                    content = @Content(schema = @Schema(implementation = OrderDTO.class))
+            ),
             @ApiResponse(responseCode = &quot;400&quot;, description = &quot;Erro de validação&quot;),
             @ApiResponse(responseCode = &quot;401&quot;, description = &quot;Não autorizado&quot;),
             @ApiResponse(responseCode = &quot;404&quot;, description = &quot;Pedido não encontrado&quot;)
     })
     public Mono&lt;ResponseEntity&lt;byte[]&gt;&gt; update(
             @Parameter(description = &quot;ID do pedido&quot;) @PathVariable UUID id,
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = &quot;Dados atualizados do pedido&quot;) @RequestBody OrderDTO dto,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = &quot;Dados atualizados do pedido&quot;) @Valid @RequestBody OrderDTO dto,
             HttpServletRequest request) {
-<span class="nc" id="L90">        return proxy(request, dto, request.getRequestURI(), true);</span>
+<span class="nc" id="L113">        return proxy(request, dto, request.getRequestURI(), true);</span>
     }
 
     @DeleteMapping(&quot;/{id}&quot;)
@@ -100,7 +123,7 @@ public class OrderProxyController {
     public Mono&lt;ResponseEntity&lt;byte[]&gt;&gt; delete(
             @Parameter(description = &quot;ID do pedido&quot;) @PathVariable UUID id,
             HttpServletRequest request) {
-<span class="nc" id="L103">        return proxy(request, null, request.getRequestURI(), true);</span>
+<span class="nc" id="L126">        return proxy(request, null, request.getRequestURI(), true);</span>
     }
 
     // ─── Order Items ──────────────────────────────────────────────────────
@@ -108,82 +131,90 @@ public class OrderProxyController {
     @GetMapping(&quot;/{orderId}/items&quot;)
     @Operation(summary = &quot;Listar itens do pedido&quot;, description = &quot;Retorna a lista de itens associados a um pedido&quot;)
     @ApiResponses({
-            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Sucesso&quot;),
+            @ApiResponse(
+                    responseCode = &quot;200&quot;,
+                    description = &quot;Sucesso&quot;,
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = OrderItemDTO.class)))
+            ),
             @ApiResponse(responseCode = &quot;401&quot;, description = &quot;Não autorizado&quot;),
             @ApiResponse(responseCode = &quot;404&quot;, description = &quot;Pedido não encontrado&quot;)
     })
     public Mono&lt;ResponseEntity&lt;byte[]&gt;&gt; findItemsByOrderId(
             @Parameter(description = &quot;ID do pedido&quot;) @PathVariable UUID orderId,
             HttpServletRequest request) {
-<span class="nc" id="L118">        return proxy(request, null, request.getRequestURI(), true);</span>
+<span class="nc" id="L145">        return proxy(request, null, request.getRequestURI(), true);</span>
     }
 
     @PostMapping(&quot;/{orderId}/items&quot;)
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = &quot;Adicionar item ao pedido&quot;, description = &quot;Adiciona um novo item ao pedido especificado&quot;)
     @ApiResponses({
-            @ApiResponse(responseCode = &quot;201&quot;, description = &quot;Adicionado com sucesso&quot;),
+            @ApiResponse(
+                    responseCode = &quot;201&quot;,
+                    description = &quot;Adicionado com sucesso&quot;,
+                    content = @Content(schema = @Schema(implementation = OrderItemDTO.class))
+            ),
             @ApiResponse(responseCode = &quot;400&quot;, description = &quot;Erro de validação&quot;),
             @ApiResponse(responseCode = &quot;401&quot;, description = &quot;Não autorizado&quot;),
             @ApiResponse(responseCode = &quot;404&quot;, description = &quot;Pedido não encontrado&quot;)
     })
     public Mono&lt;ResponseEntity&lt;byte[]&gt;&gt; addItem(
             @Parameter(description = &quot;ID do pedido&quot;) @PathVariable UUID orderId,
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = &quot;Dados do item&quot;) @RequestBody OrderItemDTO dto,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = &quot;Dados do item&quot;) @Valid @RequestBody OrderItemDTO dto,
             HttpServletRequest request) {
-<span class="nc" id="L134">        return proxy(request, dto, request.getRequestURI(), true);</span>
+<span class="nc" id="L165">        return proxy(request, dto, request.getRequestURI(), true);</span>
     }
 
     // ─── Internal proxy helper ────────────────────────────────────────────
 
     private Mono&lt;ResponseEntity&lt;byte[]&gt;&gt; proxy(HttpServletRequest request, Object body) {
-<span class="nc" id="L140">        return proxy(request, body, request.getRequestURI(), true);</span>
+<span class="nc" id="L171">        return proxy(request, body, request.getRequestURI(), true);</span>
     }
 
     private Mono&lt;ResponseEntity&lt;byte[]&gt;&gt; proxy(HttpServletRequest request, Object body, String targetPath, boolean propagateAuthorization) {
-<span class="fc" id="L144">        String path = targetPath;</span>
-<span class="pc bpc" id="L145" title="1 of 2 branches missed.">        String query = request.getQueryString() != null ? &quot;?&quot; + request.getQueryString() : &quot;&quot;;</span>
-<span class="fc" id="L146">        HttpHeaders forwardHeaders = buildForwardHeaders(request, propagateAuthorization);</span>
+<span class="fc" id="L175">        String path = targetPath;</span>
+<span class="pc bpc" id="L176" title="1 of 2 branches missed.">        String query = request.getQueryString() != null ? &quot;?&quot; + request.getQueryString() : &quot;&quot;;</span>
+<span class="fc" id="L177">        HttpHeaders forwardHeaders = buildForwardHeaders(request, propagateAuthorization);</span>
 
-<span class="fc" id="L148">        WebClient.RequestBodySpec bodySpec = webClient</span>
-<span class="fc" id="L149">                .method(HttpMethod.valueOf(request.getMethod()))</span>
-<span class="fc" id="L150">                .uri(path + query)</span>
-<span class="fc" id="L151">                .headers(h -&gt; h.addAll(forwardHeaders));</span>
+<span class="fc" id="L179">        WebClient.RequestBodySpec bodySpec = webClient</span>
+<span class="fc" id="L180">                .method(HttpMethod.valueOf(request.getMethod()))</span>
+<span class="fc" id="L181">                .uri(path + query)</span>
+<span class="fc" id="L182">                .headers(h -&gt; h.addAll(forwardHeaders));</span>
 
-<span class="fc bfc" id="L153" title="All 2 branches covered.">        if (body != null) {</span>
-<span class="fc" id="L154">            return bodySpec.bodyValue(body).exchangeToMono(response -&gt; response.toEntity(byte[].class));</span>
+<span class="fc bfc" id="L184" title="All 2 branches covered.">        if (body != null) {</span>
+<span class="fc" id="L185">            return bodySpec.bodyValue(body).exchangeToMono(response -&gt; response.toEntity(byte[].class));</span>
         }
-<span class="fc" id="L156">        return bodySpec.exchangeToMono(response -&gt; response.toEntity(byte[].class));</span>
+<span class="fc" id="L187">        return bodySpec.exchangeToMono(response -&gt; response.toEntity(byte[].class));</span>
     }
 
     private HttpHeaders buildForwardHeaders(HttpServletRequest request, boolean propagateAuthorization) {
-<span class="fc" id="L160">        HttpHeaders headers = new HttpHeaders();</span>
+<span class="fc" id="L191">        HttpHeaders headers = new HttpHeaders();</span>
 
-<span class="fc bfc" id="L162" title="All 2 branches covered.">        if (propagateAuthorization) {</span>
-<span class="fc" id="L163">            String token = extractBearerToken(request);</span>
-<span class="pc bpc" id="L164" title="1 of 2 branches missed.">            if (StringUtils.hasText(token)) {</span>
-<span class="fc" id="L165">                headers.setBearerAuth(token);</span>
+<span class="fc bfc" id="L193" title="All 2 branches covered.">        if (propagateAuthorization) {</span>
+<span class="fc" id="L194">            String token = extractBearerToken(request);</span>
+<span class="pc bpc" id="L195" title="1 of 2 branches missed.">            if (StringUtils.hasText(token)) {</span>
+<span class="fc" id="L196">                headers.setBearerAuth(token);</span>
             }
         }
 
-<span class="fc bfc" id="L169" title="All 2 branches covered.">        if (StringUtils.hasText(request.getContentType())) {</span>
-<span class="fc" id="L170">            headers.setContentType(MediaType.parseMediaType(request.getContentType()));</span>
+<span class="fc bfc" id="L200" title="All 2 branches covered.">        if (StringUtils.hasText(request.getContentType())) {</span>
+<span class="fc" id="L201">            headers.setContentType(MediaType.parseMediaType(request.getContentType()));</span>
         }
 
-<span class="fc" id="L173">        String accept = request.getHeader(HttpHeaders.ACCEPT);</span>
-<span class="pc bpc" id="L174" title="1 of 2 branches missed.">        if (StringUtils.hasText(accept)) {</span>
-<span class="nc" id="L175">            headers.add(HttpHeaders.ACCEPT, accept);</span>
+<span class="fc" id="L204">        String accept = request.getHeader(HttpHeaders.ACCEPT);</span>
+<span class="pc bpc" id="L205" title="1 of 2 branches missed.">        if (StringUtils.hasText(accept)) {</span>
+<span class="nc" id="L206">            headers.add(HttpHeaders.ACCEPT, accept);</span>
         }
 
-<span class="fc" id="L178">        return headers;</span>
+<span class="fc" id="L209">        return headers;</span>
     }
 
     private String extractBearerToken(HttpServletRequest request) {
-<span class="fc" id="L182">        String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);</span>
-<span class="pc bpc" id="L183" title="2 of 4 branches missed.">        if (!StringUtils.hasText(authorization) || !authorization.startsWith(&quot;Bearer &quot;)) {</span>
-<span class="nc" id="L184">            return null;</span>
+<span class="fc" id="L213">        String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);</span>
+<span class="pc bpc" id="L214" title="2 of 4 branches missed.">        if (!StringUtils.hasText(authorization) || !authorization.startsWith(&quot;Bearer &quot;)) {</span>
+<span class="nc" id="L215">            return null;</span>
         }
-<span class="fc" id="L186">        return authorization.substring(7);</span>
+<span class="fc" id="L217">        return authorization.substring(7);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>
