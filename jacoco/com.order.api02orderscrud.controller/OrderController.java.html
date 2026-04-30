@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springdoc.core.annotations.ParameterObject;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -32,8 +33,8 @@ public class OrderController {
             @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Sucesso&quot;),
             @ApiResponse(responseCode = &quot;401&quot;, description = &quot;Não autorizado&quot;)
     })
-    public Page&lt;OrderDTO&gt; findAll(Pageable pageable) {
-<span class="fc" id="L36">        return orderService.findAll(pageable);</span>
+    public Page&lt;OrderDTO&gt; findAll(@ParameterObject Pageable pageable) {
+<span class="fc" id="L37">        return orderService.findAll(pageable);</span>
     }
 
     @GetMapping(&quot;/{id}&quot;)
@@ -44,7 +45,7 @@ public class OrderController {
             @ApiResponse(responseCode = &quot;404&quot;, description = &quot;Pedido não encontrado&quot;)
     })
     public OrderDTO findById(@PathVariable UUID id) {
-<span class="nc" id="L47">        return orderService.findById(id);</span>
+<span class="nc" id="L48">        return orderService.findById(id);</span>
     }
 
     @PostMapping
@@ -56,7 +57,7 @@ public class OrderController {
             @ApiResponse(responseCode = &quot;401&quot;, description = &quot;Não autorizado&quot;)
     })
     public OrderDTO save(@Valid @RequestBody OrderDTO dto) {
-<span class="fc" id="L59">        return orderService.save(dto);</span>
+<span class="fc" id="L60">        return orderService.save(dto);</span>
     }
 
     @PutMapping(&quot;/{id}&quot;)
@@ -68,7 +69,7 @@ public class OrderController {
             @ApiResponse(responseCode = &quot;404&quot;, description = &quot;Pedido não encontrado&quot;)
     })
     public OrderDTO update(@PathVariable UUID id, @Valid @RequestBody OrderDTO dto) {
-<span class="fc" id="L71">        return orderService.update(id, dto);</span>
+<span class="fc" id="L72">        return orderService.update(id, dto);</span>
     }
 
     @DeleteMapping(&quot;/{id}&quot;)
@@ -79,8 +80,8 @@ public class OrderController {
             @ApiResponse(responseCode = &quot;404&quot;, description = &quot;Pedido não encontrado&quot;)
     })
     public ResponseEntity&lt;Void&gt; delete(@PathVariable UUID id) {
-<span class="nc" id="L82">        orderService.delete(id);</span>
-<span class="nc" id="L83">        return ResponseEntity.noContent().build();</span>
+<span class="nc" id="L83">        orderService.delete(id);</span>
+<span class="nc" id="L84">        return ResponseEntity.noContent().build();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

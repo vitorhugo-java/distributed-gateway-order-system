@@ -1,32 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GlobalExceptionHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">distributed-gateway-order-system</a> &gt; <a href="index.source.html" class="el_package">com.order.api02orderscrud.exception</a> &gt; <span class="el_source">GlobalExceptionHandler.java</span></div><h1>GlobalExceptionHandler.java</h1><pre class="source lang-java linenums">package com.order.api02orderscrud.exception;
 
+import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
-<span class="fc" id="L9">public class GlobalExceptionHandler {</span>
+<span class="fc" id="L10">public class GlobalExceptionHandler {</span>
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity&lt;String&gt; handleEntityNotFoundException(EntityNotFoundException ex) {
-<span class="fc" id="L13">        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());</span>
+<span class="fc" id="L14">        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());</span>
     }
 
     @ExceptionHandler(org.springframework.web.bind.MethodArgumentNotValidException.class)
     public ResponseEntity&lt;java.util.Map&lt;String, String&gt;&gt; handleValidationExceptions(org.springframework.web.bind.MethodArgumentNotValidException ex) {
-<span class="fc" id="L18">        java.util.Map&lt;String, String&gt; errors = new java.util.HashMap&lt;&gt;();</span>
-<span class="fc" id="L19">        ex.getBindingResult().getAllErrors().forEach((error) -&gt; {</span>
-<span class="fc" id="L20">            String fieldName = ((org.springframework.validation.FieldError) error).getField();</span>
-<span class="fc" id="L21">            String errorMessage = error.getDefaultMessage();</span>
-<span class="fc" id="L22">            errors.put(fieldName, errorMessage);</span>
-<span class="fc" id="L23">        });</span>
-<span class="fc" id="L24">        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);</span>
+<span class="fc" id="L19">        java.util.Map&lt;String, String&gt; errors = new java.util.HashMap&lt;&gt;();</span>
+<span class="fc" id="L20">        ex.getBindingResult().getAllErrors().forEach((error) -&gt; {</span>
+<span class="fc" id="L21">            String fieldName = ((org.springframework.validation.FieldError) error).getField();</span>
+<span class="fc" id="L22">            String errorMessage = error.getDefaultMessage();</span>
+<span class="fc" id="L23">            errors.put(fieldName, errorMessage);</span>
+<span class="fc" id="L24">        });</span>
+<span class="fc" id="L25">        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);</span>
+    }
+
+    @ExceptionHandler(PropertyReferenceException.class)
+    public ResponseEntity&lt;String&gt; handlePropertyReferenceException(PropertyReferenceException ex) {
+<span class="fc" id="L30">        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());</span>
     }
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity&lt;String&gt; handleRuntimeException(RuntimeException ex) {
-<span class="fc" id="L29">        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());</span>
+<span class="fc" id="L35">        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>
