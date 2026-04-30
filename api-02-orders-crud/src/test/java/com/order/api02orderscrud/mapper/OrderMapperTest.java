@@ -10,6 +10,7 @@ import org.mapstruct.factory.Mappers;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,6 +44,7 @@ class OrderMapperTest {
         assertEquals(dateTime, dto.orderDate());
         assertEquals(OrderStatus.PENDING, dto.status());
         assertEquals(new BigDecimal("150.00"), dto.totalAmount());
+        assertEquals(0, dto.items().size());
     }
 
     @Test
@@ -53,7 +55,8 @@ class OrderMapperTest {
                 "john@example.com",
                 LocalDateTime.now(),
                 OrderStatus.PENDING,
-                new BigDecimal("100.00")
+                new BigDecimal("100.00"),
+                List.of()
         );
 
         Order entity = mapper.toEntity(dto);

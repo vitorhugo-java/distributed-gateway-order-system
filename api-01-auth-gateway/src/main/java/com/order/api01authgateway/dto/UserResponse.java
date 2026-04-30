@@ -8,11 +8,8 @@ public record UserResponse(
     @Schema(description = "Database user ID", example = "1")
     Integer id, 
     
-    @Schema(description = "Full name", example = "Vitor Hugo")
-    String name, 
-    
-    @Schema(description = "Contact email", example = "vitor@email.com")
-    String email, 
+    @Schema(description = "Username", example = "admin")
+    String username, 
     
     @Schema(description = "Authorization roles", example = "[\"USER\", \"ADMIN\"]")
     Set<String> roles

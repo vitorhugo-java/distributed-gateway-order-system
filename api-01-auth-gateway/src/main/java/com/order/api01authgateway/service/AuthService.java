@@ -30,19 +30,19 @@ public class AuthService {
     /**
      * Authenticates a user and returns a token response.
      *
-     * @param request The login request containing email and password.
+     * @param request The login request containing username and password.
      * @return A {@link TokenResponse} containing the generated JWT.
      * @throws org.springframework.security.core.AuthenticationException If authentication fails (e.g., bad credentials).
      */
     public TokenResponse authenticate(LoginRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.email(),
+                        request.username(),
                         request.password()
                 )
         );
 
-        UserDetails user = userDetailsService.loadUserByUsername(request.email());
+        UserDetails user = userDetailsService.loadUserByUsername(request.username());
         String jwtToken = jwtService.generateToken(user);
 
         return new TokenResponse(jwtToken, "Bearer", jwtService.getExpirationTime());

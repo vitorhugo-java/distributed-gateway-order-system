@@ -107,7 +107,7 @@ curl -X POST "http://localhost:8080/auth/login" \
   -H "Content-Type: application/json" \
   -H "Accept: application/json" \
   -d '{
-    "email": "admin@example.com",
+    "username": "admin",
     "password": "admin123"
   }'
 ```
@@ -147,7 +147,8 @@ Response:
   "customerEmail": "readme.demo@example.com",
   "orderDate": "2026-04-29T23:24:54",
   "status": "PENDING",
-  "totalAmount": 149.9
+  "totalAmount": 149.9,
+  "items": []
 }
 ```
 
@@ -170,7 +171,8 @@ Response:
       "customerEmail": "readme.demo@example.com",
       "orderDate": "2026-04-29T23:24:54",
       "status": "PENDING",
-      "totalAmount": 149.9
+      "totalAmount": 149.9,
+      "items": []
     }
   ],
   "empty": false,
@@ -218,7 +220,8 @@ Response:
   "customerEmail": "readme.demo@example.com",
   "orderDate": "2026-04-29T23:24:54",
   "status": "PENDING",
-  "totalAmount": 149.9
+  "totalAmount": 149.9,
+  "items": []
 }
 ```
 
@@ -274,7 +277,7 @@ Response:
 
 ## Testing Credentials
 
-- Email: admin@example.com
+- Username: admin
 - Password: admin123
 
 ---

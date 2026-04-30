@@ -13,12 +13,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import java.util.Collections;
 import java.util.UUID;
 
 @RestController
@@ -39,12 +40,12 @@ public class OrderProxyController {
             @ApiResponse(responseCode = "401", description = "Não autorizado")
     })
     public Mono<ResponseEntity<byte[]>> findAll(HttpServletRequest request) {
-        return proxy(request, null);
+        return proxy(request, null, request.getRequestURI(), true);
     }
 
     @GetMapping("/v3/api-docs")
     public Mono<ResponseEntity<byte[]>> apiDocs(HttpServletRequest request) {
-        return proxy(request, null, "/v3/api-docs");
+        return proxy(request, null, "/v3/api-docs", false);
     }
 
     @GetMapping("/{id}")
@@ -57,7 +58,7 @@ public class OrderProxyController {
     public Mono<ResponseEntity<byte[]>> findById(
             @Parameter(description = "ID do pedido") @PathVariable UUID id,
             HttpServletRequest request) {
-        return proxy(request, null);
+        return proxy(request, null, request.getRequestURI(), true);
     }
 
     @PostMapping
@@ -71,7 +72,7 @@ public class OrderProxyController {
     public Mono<ResponseEntity<byte[]>> save(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Dados do pedido") @RequestBody OrderDTO dto,
             HttpServletRequest request) {
-        return proxy(request, dto);
+        return proxy(request, dto, request.getRequestURI(), true);
     }
 
     @PutMapping("/{id}")
@@ -86,7 +87,7 @@ public class OrderProxyController {
             @Parameter(description = "ID do pedido") @PathVariable UUID id,
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Dados atualizados do pedido") @RequestBody OrderDTO dto,
             HttpServletRequest request) {
-        return proxy(request, dto);
+        return proxy(request, dto, request.getRequestURI(), true);
     }
 
     @DeleteMapping("/{id}")
@@ -99,7 +100,7 @@ public class OrderProxyController {
     public Mono<ResponseEntity<byte[]>> delete(
             @Parameter(description = "ID do pedido") @PathVariable UUID id,
             HttpServletRequest request) {
-        return proxy(request, null);
+        return proxy(request, null, request.getRequestURI(), true);
     }
 
     // ─── Order Items ──────────────────────────────────────────────────────
@@ -114,7 +115,7 @@ public class OrderProxyController {
     public Mono<ResponseEntity<byte[]>> findItemsByOrderId(
             @Parameter(description = "ID do pedido") @PathVariable UUID orderId,
             HttpServletRequest request) {
-        return proxy(request, null);
+        return proxy(request, null, request.getRequestURI(), true);
     }
 
     @PostMapping("/{orderId}/items")
@@ -130,26 +131,19 @@ public class OrderProxyController {
             @Parameter(description = "ID do pedido") @PathVariable UUID orderId,
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Dados do item") @RequestBody OrderItemDTO dto,
             HttpServletRequest request) {
-        return proxy(request, dto);
+        return proxy(request, dto, request.getRequestURI(), true);
     }
 
     // ─── Internal proxy helper ────────────────────────────────────────────
 
     private Mono<ResponseEntity<byte[]>> proxy(HttpServletRequest request, Object body) {
-        return proxy(request, body, request.getRequestURI());
+        return proxy(request, body, request.getRequestURI(), true);
     }
 
-    private Mono<ResponseEntity<byte[]>> proxy(HttpServletRequest request, Object body, String targetPath) {
+    private Mono<ResponseEntity<byte[]>> proxy(HttpServletRequest request, Object body, String targetPath, boolean propagateAuthorization) {
         String path = targetPath;
         String query = request.getQueryString() != null ? "?" + request.getQueryString() : "";
-
-        HttpHeaders forwardHeaders = new HttpHeaders();
-        Collections.list(request.getHeaderNames()).forEach(name -> {
-            if (!name.equalsIgnoreCase(HttpHeaders.HOST)) {
-                Collections.list(request.getHeaders(name))
-                        .forEach(value -> forwardHeaders.add(name, value));
-            }
-        });
+        HttpHeaders forwardHeaders = buildForwardHeaders(request, propagateAuthorization);
 
         WebClient.RequestBodySpec bodySpec = webClient
                 .method(HttpMethod.valueOf(request.getMethod()))
@@ -160,5 +154,35 @@ public class OrderProxyController {
             return bodySpec.bodyValue(body).exchangeToMono(response -> response.toEntity(byte[].class));
         }
         return bodySpec.exchangeToMono(response -> response.toEntity(byte[].class));
+    }
+
+    private HttpHeaders buildForwardHeaders(HttpServletRequest request, boolean propagateAuthorization) {
+        HttpHeaders headers = new HttpHeaders();
+
+        if (propagateAuthorization) {
+            String token = extractBearerToken(request);
+            if (StringUtils.hasText(token)) {
+                headers.setBearerAuth(token);
+            }
+        }
+
+        if (StringUtils.hasText(request.getContentType())) {
+            headers.setContentType(MediaType.parseMediaType(request.getContentType()));
+        }
+
+        String accept = request.getHeader(HttpHeaders.ACCEPT);
+        if (StringUtils.hasText(accept)) {
+            headers.add(HttpHeaders.ACCEPT, accept);
+        }
+
+        return headers;
+    }
+
+    private String extractBearerToken(HttpServletRequest request) {
+        String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (!StringUtils.hasText(authorization) || !authorization.startsWith("Bearer ")) {
+            return null;
+        }
+        return authorization.substring(7);
     }
 }

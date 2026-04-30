@@ -53,8 +53,8 @@ class OrderControllerTest {
     @Test
     @WithMockUser
     void save_WithValidData_ShouldReturn201() throws Exception {
-        OrderDTO dto = new OrderDTO(null, "John Doe", "john@example.com", LocalDateTime.now(), OrderStatus.PENDING, BigDecimal.ZERO);
-        OrderDTO savedDto = new OrderDTO(UUID.randomUUID(), "John Doe", "john@example.com", LocalDateTime.now(), OrderStatus.PENDING, BigDecimal.ZERO);
+        OrderDTO dto = new OrderDTO(null, "John Doe", "john@example.com", LocalDateTime.now(), OrderStatus.PENDING, BigDecimal.ZERO, List.of());
+        OrderDTO savedDto = new OrderDTO(UUID.randomUUID(), "John Doe", "john@example.com", LocalDateTime.now(), OrderStatus.PENDING, BigDecimal.ZERO, List.of());
 
         when(orderService.save(any(OrderDTO.class))).thenReturn(savedDto);
 
@@ -69,7 +69,7 @@ class OrderControllerTest {
     @Test
     @WithMockUser
     void save_WithMissingMandatoryFields_ShouldReturn400() throws Exception {
-        OrderDTO dto = new OrderDTO(null, "", "invalid-email", null, null, null);
+        OrderDTO dto = new OrderDTO(null, "", "invalid-email", null, null, null, List.of());
 
         mockMvc.perform(post("/api/orders")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -80,7 +80,7 @@ class OrderControllerTest {
     @Test
     @WithMockUser
     void findAll_ShouldReturnPagedOrders() throws Exception {
-        OrderDTO dto = new OrderDTO(UUID.randomUUID(), "John Doe", "john@example.com", LocalDateTime.now(), OrderStatus.PENDING, BigDecimal.ZERO);
+        OrderDTO dto = new OrderDTO(UUID.randomUUID(), "John Doe", "john@example.com", LocalDateTime.now(), OrderStatus.PENDING, BigDecimal.ZERO, List.of());
         Page<OrderDTO> page = new PageImpl<>(List.of(dto));
 
         when(orderService.findAll(any(Pageable.class))).thenReturn(page);
@@ -106,8 +106,8 @@ class OrderControllerTest {
     @WithMockUser
     void update_WithValidData_ShouldReturn200() throws Exception {
         UUID id = UUID.randomUUID();
-        OrderDTO dto = new OrderDTO(null, "John Doe", "john@example.com", LocalDateTime.now(), OrderStatus.CONFIRMED, BigDecimal.TEN);
-        OrderDTO updatedDto = new OrderDTO(id, "John Doe", "john@example.com", dto.orderDate(), OrderStatus.CONFIRMED, BigDecimal.TEN);
+        OrderDTO dto = new OrderDTO(null, "John Doe", "john@example.com", LocalDateTime.now(), OrderStatus.CONFIRMED, BigDecimal.TEN, List.of());
+        OrderDTO updatedDto = new OrderDTO(id, "John Doe", "john@example.com", dto.orderDate(), OrderStatus.CONFIRMED, BigDecimal.TEN, List.of());
 
         when(orderService.update(any(UUID.class), any(OrderDTO.class))).thenReturn(updatedDto);
 
@@ -123,7 +123,7 @@ class OrderControllerTest {
     @WithMockUser
     void update_WhenNotFound_ShouldReturn404() throws Exception {
         UUID id = UUID.randomUUID();
-        OrderDTO dto = new OrderDTO(null, "John Doe", "john@example.com", LocalDateTime.now(), OrderStatus.PENDING, BigDecimal.ZERO);
+        OrderDTO dto = new OrderDTO(null, "John Doe", "john@example.com", LocalDateTime.now(), OrderStatus.PENDING, BigDecimal.ZERO, List.of());
 
         when(orderService.update(any(UUID.class), any(OrderDTO.class))).thenThrow(new EntityNotFoundException("Order not found"));
 

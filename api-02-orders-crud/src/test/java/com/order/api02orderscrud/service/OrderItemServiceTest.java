@@ -4,7 +4,7 @@ import com.order.api02orderscrud.dto.OrderItemDTO;
 import com.order.api02orderscrud.entity.Order;
 import com.order.api02orderscrud.entity.OrderItem;
 import com.order.api02orderscrud.exception.EntityNotFoundException;
-import com.order.api02orderscrud.repository.OrderItemRepository;
+import com.order.api02orderscrud.mapper.OrderMapper;
 import com.order.api02orderscrud.repository.OrderRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,10 +32,10 @@ import static org.mockito.Mockito.when;
 class OrderItemServiceTest {
 
     @Mock
-    private OrderItemRepository orderItemRepository;
+    private OrderRepository orderRepository;
 
     @Mock
-    private OrderRepository orderRepository;
+    private OrderMapper orderMapper;
 
     @InjectMocks
     private OrderItemService orderItemService;
@@ -47,8 +47,17 @@ class OrderItemServiceTest {
         order.setId(orderId);
         
         OrderItemDTO dto = new OrderItemDTO(null, "Product 1", 3, new BigDecimal("100.00"), null);
+        OrderItem mappedItem = new OrderItem();
+        mappedItem.setProductName(dto.productName());
+        mappedItem.setQuantity(dto.quantity());
+        mappedItem.setUnitPrice(dto.unitPrice());
 
         when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
+        when(orderMapper.toEntity(dto)).thenReturn(mappedItem);
+        when(orderMapper.toDto(mappedItem)).thenAnswer(invocation -> {
+            OrderItem item = invocation.getArgument(0);
+            return new OrderItemDTO(item.getId(), item.getProductName(), item.getQuantity(), item.getUnitPrice(), item.getSubtotal());
+        });
         when(orderRepository.save(any(Order.class))).thenReturn(order);
 
         OrderItemDTO result = orderItemService.addItem(orderId, dto);
@@ -94,8 +103,17 @@ class OrderItemServiceTest {
         order.addItem(existingItem);
 
         OrderItemDTO dto = new OrderItemDTO(null, "Product 1", 2, new BigDecimal("100.00"), null);
+        OrderItem mappedItem = new OrderItem();
+        mappedItem.setProductName(dto.productName());
+        mappedItem.setQuantity(dto.quantity());
+        mappedItem.setUnitPrice(dto.unitPrice());
 
         when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
+        when(orderMapper.toEntity(dto)).thenReturn(mappedItem);
+        when(orderMapper.toDto(mappedItem)).thenAnswer(invocation -> {
+            OrderItem itemArgument = invocation.getArgument(0);
+            return new OrderItemDTO(itemArgument.getId(), itemArgument.getProductName(), itemArgument.getQuantity(), itemArgument.getUnitPrice(), itemArgument.getSubtotal());
+        });
         when(orderRepository.save(any(Order.class))).thenReturn(order);
 
         orderItemService.addItem(orderId, dto);
@@ -116,6 +134,7 @@ class OrderItemServiceTest {
         order.addItem(item);
 
         when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
+        when(orderMapper.toDto(item)).thenReturn(new OrderItemDTO(item.getId(), item.getProductName(), item.getQuantity(), item.getUnitPrice(), item.getSubtotal()));
 
         List<OrderItemDTO> result = orderItemService.findByOrderId(orderId);
 

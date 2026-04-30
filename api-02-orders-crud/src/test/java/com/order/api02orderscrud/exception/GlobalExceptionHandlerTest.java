@@ -59,7 +59,7 @@ class GlobalExceptionHandlerTest {
 
     static class TestTarget {
         void accept(OrderDTO dto) {
-            OrderDTO ignored = new OrderDTO(null, dto.customerName(), dto.customerEmail(), LocalDateTime.now(), OrderStatus.PENDING, BigDecimal.ZERO);
+            OrderDTO ignored = new OrderDTO(null, dto.customerName(), dto.customerEmail(), LocalDateTime.now(), OrderStatus.PENDING, BigDecimal.ZERO, java.util.List.of());
             ignored.hashCode();
         }
     }

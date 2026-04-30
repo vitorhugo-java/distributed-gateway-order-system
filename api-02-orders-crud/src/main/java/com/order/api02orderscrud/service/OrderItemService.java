@@ -2,45 +2,37 @@ package com.order.api02orderscrud.service;
 
 import com.order.api02orderscrud.dto.OrderItemDTO;
 import com.order.api02orderscrud.entity.Order;
-import com.order.api02orderscrud.entity.OrderItem;
 import com.order.api02orderscrud.exception.EntityNotFoundException;
-import com.order.api02orderscrud.repository.OrderItemRepository;
+import com.order.api02orderscrud.mapper.OrderMapper;
 import com.order.api02orderscrud.repository.OrderRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class OrderItemService {
 
-    private final OrderItemRepository orderItemRepository;
     private final OrderRepository orderRepository;
-
-    public OrderItemService(OrderItemRepository orderItemRepository, OrderRepository orderRepository) {
-        this.orderItemRepository = orderItemRepository;
-        this.orderRepository = orderRepository;
-    }
+    private final OrderMapper orderMapper;
 
     @Transactional(readOnly = true)
     public List<OrderItemDTO> findByOrderId(UUID orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new EntityNotFoundException("Order not found"));
         return order.getItems().stream()
-                .map(i -> new OrderItemDTO(i.getId(), i.getProductName(), i.getQuantity(), i.getUnitPrice(), i.getSubtotal()))
-                .collect(Collectors.toList());
+                .map(orderMapper::toDto)
+                .toList();
     }
 
     @Transactional
     public OrderItemDTO addItem(UUID orderId, OrderItemDTO dto) {
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new EntityNotFoundException("Order not found"));
-        OrderItem item = new OrderItem();
-        item.setProductName(dto.productName());
-        item.setQuantity(dto.quantity());
-        item.setUnitPrice(dto.unitPrice());
+        var item = orderMapper.toEntity(dto);
         order.addItem(item);
         orderRepository.save(order);
-        return new OrderItemDTO(item.getId(), item.getProductName(), item.getQuantity(), item.getUnitPrice(), item.getSubtotal());
+        return orderMapper.toDto(item);
     }
 }

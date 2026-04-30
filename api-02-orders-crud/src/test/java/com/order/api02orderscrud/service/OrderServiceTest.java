@@ -50,7 +50,7 @@ public class OrderServiceTest {
         o.setId(id);
         o.setCustomerName("John");
         o.setTotalAmount(BigDecimal.TEN);
-        OrderDTO dto = new OrderDTO(id, "John", "john@example.com", LocalDateTime.now(), OrderStatus.PENDING, BigDecimal.TEN);
+        OrderDTO dto = new OrderDTO(id, "John", "john@example.com", LocalDateTime.now(), OrderStatus.PENDING, BigDecimal.TEN, List.of());
         when(orderRepository.findById(id)).thenReturn(Optional.of(o));
         when(orderMapper.toDto(o)).thenReturn(dto);
 
@@ -76,7 +76,7 @@ public class OrderServiceTest {
         UUID id = UUID.randomUUID();
         order.setId(id);
         order.setCustomerName("John");
-        OrderDTO dto = new OrderDTO(id, "John", "john@example.com", LocalDateTime.now(), OrderStatus.PENDING, BigDecimal.TEN);
+        OrderDTO dto = new OrderDTO(id, "John", "john@example.com", LocalDateTime.now(), OrderStatus.PENDING, BigDecimal.TEN, List.of());
         Page<Order> page = new PageImpl<>(List.of(order));
 
         when(orderRepository.findAll(PageRequest.of(0, 10))).thenReturn(page);
@@ -91,13 +91,13 @@ public class OrderServiceTest {
     @Test
     public void testSaveShouldMapAndPersist() {
         UUID id = UUID.randomUUID();
-        OrderDTO dto = new OrderDTO(null, "John", "john@example.com", LocalDateTime.now(), OrderStatus.PENDING, BigDecimal.ZERO);
+        OrderDTO dto = new OrderDTO(null, "John", "john@example.com", LocalDateTime.now(), OrderStatus.PENDING, BigDecimal.ZERO, List.of());
         Order mapped = new Order();
         mapped.setCustomerName("John");
         Order saved = new Order();
         saved.setId(id);
         saved.setCustomerName("John");
-        OrderDTO savedDto = new OrderDTO(id, "John", "john@example.com", LocalDateTime.now(), OrderStatus.PENDING, BigDecimal.ZERO);
+        OrderDTO savedDto = new OrderDTO(id, "John", "john@example.com", LocalDateTime.now(), OrderStatus.PENDING, BigDecimal.ZERO, List.of());
 
         when(orderMapper.toEntity(dto)).thenReturn(mapped);
         when(orderRepository.save(mapped)).thenReturn(saved);
@@ -113,7 +113,7 @@ public class OrderServiceTest {
     public void testUpdateShouldPersistChanges() {
         UUID id = UUID.randomUUID();
         LocalDateTime orderDate = LocalDateTime.now();
-        OrderDTO dto = new OrderDTO(null, "Jane", "jane@example.com", orderDate, OrderStatus.CONFIRMED, BigDecimal.TEN);
+        OrderDTO dto = new OrderDTO(null, "Jane", "jane@example.com", orderDate, OrderStatus.CONFIRMED, BigDecimal.TEN, List.of());
 
         Order existing = new Order();
         existing.setId(id);
@@ -123,7 +123,7 @@ public class OrderServiceTest {
         existing.setStatus(OrderStatus.PENDING);
         existing.setTotalAmount(BigDecimal.ONE);
 
-        OrderDTO updatedDto = new OrderDTO(id, "Jane", "jane@example.com", orderDate, OrderStatus.CONFIRMED, BigDecimal.TEN);
+        OrderDTO updatedDto = new OrderDTO(id, "Jane", "jane@example.com", orderDate, OrderStatus.CONFIRMED, BigDecimal.TEN, List.of());
 
         when(orderRepository.findById(id)).thenReturn(Optional.of(existing));
         when(orderRepository.save(existing)).thenReturn(existing);
@@ -141,7 +141,7 @@ public class OrderServiceTest {
     @Test
     public void testUpdateWhenMissingShouldThrow() {
         UUID id = UUID.randomUUID();
-        OrderDTO dto = new OrderDTO(null, "Jane", "jane@example.com", LocalDateTime.now(), OrderStatus.CONFIRMED, BigDecimal.TEN);
+        OrderDTO dto = new OrderDTO(null, "Jane", "jane@example.com", LocalDateTime.now(), OrderStatus.CONFIRMED, BigDecimal.TEN, List.of());
         when(orderRepository.findById(id)).thenReturn(Optional.empty());
 
         EntityNotFoundException ex = assertThrows(EntityNotFoundException.class, () -> orderService.update(id, dto));
@@ -168,5 +168,35 @@ public class OrderServiceTest {
 
         assertEquals("Order not found", ex.getMessage());
         verify(orderRepository, org.mockito.Mockito.never()).deleteById(any(UUID.class));
+    }
+
+    @Test
+    public void testSaveShouldNormalizeDateAndTotalFromItems() {
+        UUID id = UUID.randomUUID();
+        var item = new com.order.api02orderscrud.entity.OrderItem();
+        item.setProductName("Product 1");
+        item.setQuantity(2);
+        item.setUnitPrice(new BigDecimal("10.00"));
+
+        OrderDTO dto = new OrderDTO(null, "John", "john@example.com", LocalDateTime.now(), OrderStatus.PENDING, BigDecimal.ZERO, List.of());
+        Order mapped = new Order();
+        mapped.setCustomerName("John");
+        mapped.setItems(new java.util.ArrayList<>(List.of(item)));
+        Order saved = new Order();
+        saved.setId(id);
+        saved.setCustomerName("John");
+        saved.setOrderDate(LocalDateTime.now());
+        saved.setTotalAmount(new BigDecimal("20.00"));
+        saved.setItems(List.of(item));
+        OrderDTO savedDto = new OrderDTO(id, "John", "john@example.com", saved.getOrderDate(), OrderStatus.PENDING, new BigDecimal("20.00"), List.of());
+
+        when(orderMapper.toEntity(dto)).thenReturn(mapped);
+        when(orderRepository.save(mapped)).thenReturn(saved);
+        when(orderMapper.toDto(saved)).thenReturn(savedDto);
+
+        OrderDTO result = orderService.save(dto);
+
+        assertEquals(new BigDecimal("20.00"), mapped.getTotalAmount());
+        assertEquals(id, result.id());
     }
 }

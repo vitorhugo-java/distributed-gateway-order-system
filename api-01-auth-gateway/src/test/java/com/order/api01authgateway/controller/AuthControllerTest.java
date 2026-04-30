@@ -65,7 +65,7 @@ public class AuthControllerTest {
      */
     @Test
     public void login_WithValidCredentials_ShouldReturn200() throws Exception {
-        LoginRequest request = new LoginRequest("test@example.com", "password");
+        LoginRequest request = new LoginRequest("test-user", "password");
         TokenResponse response = new TokenResponse("jwt-token", "Bearer", 3600L);
 
         when(authService.authenticate(any(LoginRequest.class))).thenReturn(response);
@@ -87,7 +87,7 @@ public class AuthControllerTest {
      */
     @Test
     public void login_WithInvalidCredentials_ShouldReturn401() throws Exception {
-        LoginRequest request = new LoginRequest("wrong@example.com", "wrong");
+        LoginRequest request = new LoginRequest("wrong-user", "wrong");
 
         when(authService.authenticate(any(LoginRequest.class)))
                 .thenThrow(new BadCredentialsException("Invalid credentials"));
@@ -100,7 +100,7 @@ public class AuthControllerTest {
 
             @Test
             public void login_WhenUnexpectedError_ShouldReturn500() throws Exception {
-            LoginRequest request = new LoginRequest("test@example.com", "password");
+            LoginRequest request = new LoginRequest("test-user", "password");
 
             when(authService.authenticate(any(LoginRequest.class)))
                 .thenThrow(new RuntimeException("Unexpected"));
@@ -113,14 +113,14 @@ public class AuthControllerTest {
             }
 
     /**
-     * Tests the login endpoint with malformed email format.
+     * Tests the login endpoint with missing username.
      * Verifies HTTP 400 Bad Request response is returned.
      *
      * @throws Exception if any error occurs during request execution
      */
     @Test
-    public void login_WithInvalidEmail_ShouldReturn400() throws Exception {
-        LoginRequest request = new LoginRequest("invalid-email", "password");
+    public void login_WithBlankUsername_ShouldReturn400() throws Exception {
+        LoginRequest request = new LoginRequest("", "password");
 
         mockMvc.perform(post("/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)

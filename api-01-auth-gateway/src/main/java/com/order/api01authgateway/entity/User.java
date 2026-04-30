@@ -25,13 +25,10 @@ public class User {
     private Integer id;
 
     @Column(name = "use_name", nullable = false, unique = true)
-    private String name;
+    private String username;
 
     @Column(name = "use_password", nullable = false)
     private String password;
-
-    @Column(name = "use_email", nullable = false, unique = true)
-    private String email;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -49,21 +46,20 @@ public class User {
     @Column(name = "use_updated_at")
     private LocalDateTime updatedAt;
 
-    public User(String name, String password, String email) {
-        this.name = name;
+    public User(String username, String password) {
+        this.username = username;
         this.password = password;
-        this.email = email;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof User user)) return false;
-        return Objects.equals(email, user.email);
+        return Objects.equals(username, user.username);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(email);
+        return Objects.hashCode(username);
     }
 }

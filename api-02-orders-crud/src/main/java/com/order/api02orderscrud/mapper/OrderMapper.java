@@ -13,7 +13,6 @@ public interface OrderMapper {
     OrderDTO toDto(Order order);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "items", ignore = true)
     Order toEntity(OrderDTO dto);
 
     OrderItemDTO toDto(OrderItem orderItem);

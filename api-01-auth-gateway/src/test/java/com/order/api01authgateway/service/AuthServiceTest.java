@@ -44,10 +44,10 @@ class AuthServiceTest {
 
     @Test
     void shouldAuthenticateSuccessfully() {
-        LoginRequest request = new LoginRequest("test@email.com", "password");
-        UserDetails userDetails = new User("test@email.com", "password", Collections.emptyList());
+        LoginRequest request = new LoginRequest("test-user", "password");
+        UserDetails userDetails = new User("test-user", "password", Collections.emptyList());
 
-        when(userDetailsService.loadUserByUsername(request.email())).thenReturn(userDetails);
+        when(userDetailsService.loadUserByUsername(request.username())).thenReturn(userDetails);
         when(jwtService.generateToken(userDetails)).thenReturn("mocked-token");
         when(jwtService.getExpirationTime()).thenReturn(3600000L);
 
@@ -61,7 +61,7 @@ class AuthServiceTest {
 
     @Test
     void shouldThrowWhenCredentialsAreInvalid() {
-        LoginRequest request = new LoginRequest("test@email.com", "invalid");
+        LoginRequest request = new LoginRequest("test-user", "invalid");
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenThrow(new BadCredentialsException("Invalid credentials"));
 

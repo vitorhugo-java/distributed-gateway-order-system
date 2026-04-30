@@ -18,9 +18,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import java.io.IOException;
 import java.util.Collections;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -134,7 +134,7 @@ class JwtAuthenticationFilterTest {
     }
 
     @Test
-    void shouldThrowWhenTokenIsMalformed() {
+    void shouldReturnUnauthorizedWhenTokenIsMalformed() throws ServletException, IOException {
         JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtService, userDetailsService);
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.addHeader("Authorization", "Bearer malformed");
@@ -143,7 +143,10 @@ class JwtAuthenticationFilterTest {
 
         when(jwtService.extractUsername("malformed")).thenThrow(new IllegalArgumentException("Malformed token"));
 
-        assertThrows(IllegalArgumentException.class, () -> filter.doFilter(request, response, chain));
+        filter.doFilter(request, response, chain);
+
+        assertEquals(401, response.getStatus());
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
     }
 
     @Test
