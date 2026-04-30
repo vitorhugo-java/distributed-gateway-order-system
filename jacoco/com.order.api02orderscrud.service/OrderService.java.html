@@ -2,6 +2,7 @@
 
 import com.order.api02orderscrud.dto.OrderDTO;
 import com.order.api02orderscrud.entity.Order;
+import com.order.api02orderscrud.entity.OrderItem;
 import com.order.api02orderscrud.exception.EntityNotFoundException;
 import com.order.api02orderscrud.mapper.OrderMapper;
 import com.order.api02orderscrud.repository.OrderRepository;
@@ -11,6 +12,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.UUID;
 
 @Service
@@ -22,44 +26,60 @@ public class OrderService {
 
     @Transactional(readOnly = true)
     public Page&lt;OrderDTO&gt; findAll(Pageable pageable) {
-<span class="fc" id="L25">        return orderRepository.findAll(pageable).map(orderMapper::toDto);</span>
+<span class="fc" id="L29">        return orderRepository.findAll(pageable).map(orderMapper::toDto);</span>
     }
 
     @Transactional(readOnly = true)
     public OrderDTO findById(UUID id) {
-<span class="fc" id="L30">        return orderRepository.findById(id)</span>
-<span class="fc" id="L31">                .map(orderMapper::toDto)</span>
-<span class="fc" id="L32">                .orElseThrow(() -&gt; new EntityNotFoundException(&quot;Order not found&quot;));</span>
+<span class="fc" id="L34">        return orderRepository.findById(id)</span>
+<span class="fc" id="L35">                .map(orderMapper::toDto)</span>
+<span class="fc" id="L36">                .orElseThrow(() -&gt; new EntityNotFoundException(&quot;Order not found&quot;));</span>
     }
 
     @Transactional
     public OrderDTO save(OrderDTO dto) {
-<span class="fc" id="L37">        Order order = orderMapper.toEntity(dto);</span>
-<span class="fc" id="L38">        order = orderRepository.save(order);</span>
-<span class="fc" id="L39">        return orderMapper.toDto(order);</span>
+<span class="fc" id="L41">        Order order = orderMapper.toEntity(dto);</span>
+<span class="fc" id="L42">        normalizeForSave(order);</span>
+<span class="fc" id="L43">        order = orderRepository.save(order);</span>
+<span class="fc" id="L44">        return orderMapper.toDto(order);</span>
     }
 
     @Transactional
     public OrderDTO update(UUID id, OrderDTO dto) {
-<span class="fc" id="L44">        Order existingOrder = orderRepository.findById(id)</span>
-<span class="fc" id="L45">                .orElseThrow(() -&gt; new EntityNotFoundException(&quot;Order not found&quot;));</span>
+<span class="fc" id="L49">        Order existingOrder = orderRepository.findById(id)</span>
+<span class="fc" id="L50">                .orElseThrow(() -&gt; new EntityNotFoundException(&quot;Order not found&quot;));</span>
 
-<span class="fc" id="L47">        existingOrder.setCustomerName(dto.customerName());</span>
-<span class="fc" id="L48">        existingOrder.setCustomerEmail(dto.customerEmail());</span>
-<span class="pc bpc" id="L49" title="1 of 2 branches missed.">        existingOrder.setOrderDate(dto.orderDate() != null ? dto.orderDate() : existingOrder.getOrderDate());</span>
-<span class="fc" id="L50">        existingOrder.setStatus(dto.status());</span>
-<span class="fc" id="L51">        existingOrder.setTotalAmount(dto.totalAmount());</span>
+<span class="fc" id="L52">        existingOrder.setCustomerName(dto.customerName());</span>
+<span class="fc" id="L53">        existingOrder.setCustomerEmail(dto.customerEmail());</span>
+<span class="pc bpc" id="L54" title="1 of 2 branches missed.">        existingOrder.setOrderDate(dto.orderDate() != null ? dto.orderDate() : existingOrder.getOrderDate());</span>
+<span class="fc" id="L55">        existingOrder.setStatus(dto.status());</span>
+<span class="fc" id="L56">        existingOrder.setTotalAmount(dto.totalAmount());</span>
 
-<span class="fc" id="L53">        Order updatedOrder = orderRepository.save(existingOrder);</span>
-<span class="fc" id="L54">        return orderMapper.toDto(updatedOrder);</span>
+<span class="fc" id="L58">        Order updatedOrder = orderRepository.save(existingOrder);</span>
+<span class="fc" id="L59">        return orderMapper.toDto(updatedOrder);</span>
     }
 
     @Transactional
     public void delete(UUID id) {
-<span class="fc bfc" id="L59" title="All 2 branches covered.">        if (!orderRepository.existsById(id)) {</span>
-<span class="fc" id="L60">            throw new EntityNotFoundException(&quot;Order not found&quot;);</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">        if (!orderRepository.existsById(id)) {</span>
+<span class="fc" id="L65">            throw new EntityNotFoundException(&quot;Order not found&quot;);</span>
         }
-<span class="fc" id="L62">        orderRepository.deleteById(id);</span>
-<span class="fc" id="L63">    }</span>
+<span class="fc" id="L67">        orderRepository.deleteById(id);</span>
+<span class="fc" id="L68">    }</span>
+
+    private void normalizeForSave(Order order) {
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">        order.setOrderDate(order.getOrderDate() != null ? order.getOrderDate() : LocalDateTime.now());</span>
+
+<span class="pc bpc" id="L73" title="1 of 2 branches missed.">        var items = order.getItems() != null ? new ArrayList&lt;&gt;(order.getItems()) : new ArrayList&lt;OrderItem&gt;();</span>
+<span class="fc" id="L74">        order.setItems(new ArrayList&lt;&gt;());</span>
+
+<span class="fc bfc" id="L76" title="All 2 branches covered.">        if (items.isEmpty()) {</span>
+<span class="fc" id="L77">            order.setTotalAmount(BigDecimal.ZERO);</span>
+<span class="fc" id="L78">            return;</span>
+        }
+
+<span class="fc" id="L81">        items.forEach(order::addItem);</span>
+<span class="fc" id="L82">        order.recalculateTotal();</span>
+<span class="fc" id="L83">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>
