@@ -118,7 +118,7 @@ public class OrderProxyControllerTest {
     }
 
             @Test
-            public void shouldProxyRequestBody() throws Exception {
+    public void shouldProxyRequestBody() throws Exception {
             mockWebServer.enqueue(new MockResponse()
                 .setResponseCode(201)
                 .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -127,7 +127,16 @@ public class OrderProxyControllerTest {
             var mvcResult = mockMvc.perform(post("/api/orders")
                     .header(HttpHeaders.AUTHORIZATION, "Bearer token")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content("{\"value\":\"x\"}"))
+                    .content("""
+                            {
+                              "customerName":"John Doe",
+                              "customerEmail":"john@example.com",
+                              "orderDate":"2026-04-29T22:00:00",
+                              "status":"PENDING",
+                              "totalAmount":10.00,
+                              "items":[]
+                            }
+                            """))
                 .andExpect(request().asyncStarted())
                 .andReturn();
 

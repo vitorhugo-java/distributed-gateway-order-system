@@ -2,14 +2,21 @@ package com.order.api01authgateway.controller;
 
 import com.order.api01authgateway.dto.OrderDTO;
 import com.order.api01authgateway.dto.OrderItemDTO;
+import com.order.api01authgateway.dto.PageOrderDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -36,10 +43,14 @@ public class OrderProxyController {
     @GetMapping
     @Operation(summary = "Listar pedidos", description = "Retorna uma lista paginada de todos os pedidos")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Sucesso"),
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Sucesso",
+                    content = @Content(schema = @Schema(implementation = PageOrderDTO.class))
+            ),
             @ApiResponse(responseCode = "401", description = "Não autorizado")
     })
-    public Mono<ResponseEntity<byte[]>> findAll(HttpServletRequest request) {
+    public Mono<ResponseEntity<byte[]>> findAll(@ParameterObject Pageable pageable, HttpServletRequest request) {
         return proxy(request, null, request.getRequestURI(), true);
     }
 
@@ -51,7 +62,11 @@ public class OrderProxyController {
     @GetMapping("/{id}")
     @Operation(summary = "Buscar pedido por ID", description = "Retorna os detalhes de um pedido específico")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Sucesso"),
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Sucesso",
+                    content = @Content(schema = @Schema(implementation = OrderDTO.class))
+            ),
             @ApiResponse(responseCode = "401", description = "Não autorizado"),
             @ApiResponse(responseCode = "404", description = "Pedido não encontrado")
     })
@@ -65,12 +80,16 @@ public class OrderProxyController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Criar novo pedido", description = "Cria um novo pedido no sistema")
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Criado com sucesso"),
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Criado com sucesso",
+                    content = @Content(schema = @Schema(implementation = OrderDTO.class))
+            ),
             @ApiResponse(responseCode = "400", description = "Erro de validação"),
             @ApiResponse(responseCode = "401", description = "Não autorizado")
     })
     public Mono<ResponseEntity<byte[]>> save(
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Dados do pedido") @RequestBody OrderDTO dto,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Dados do pedido") @Valid @RequestBody OrderDTO dto,
             HttpServletRequest request) {
         return proxy(request, dto, request.getRequestURI(), true);
     }
@@ -78,14 +97,18 @@ public class OrderProxyController {
     @PutMapping("/{id}")
     @Operation(summary = "Atualizar pedido", description = "Atualiza os dados de um pedido existente")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Atualizado com sucesso"),
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Atualizado com sucesso",
+                    content = @Content(schema = @Schema(implementation = OrderDTO.class))
+            ),
             @ApiResponse(responseCode = "400", description = "Erro de validação"),
             @ApiResponse(responseCode = "401", description = "Não autorizado"),
             @ApiResponse(responseCode = "404", description = "Pedido não encontrado")
     })
     public Mono<ResponseEntity<byte[]>> update(
             @Parameter(description = "ID do pedido") @PathVariable UUID id,
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Dados atualizados do pedido") @RequestBody OrderDTO dto,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Dados atualizados do pedido") @Valid @RequestBody OrderDTO dto,
             HttpServletRequest request) {
         return proxy(request, dto, request.getRequestURI(), true);
     }
@@ -108,7 +131,11 @@ public class OrderProxyController {
     @GetMapping("/{orderId}/items")
     @Operation(summary = "Listar itens do pedido", description = "Retorna a lista de itens associados a um pedido")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Sucesso"),
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Sucesso",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = OrderItemDTO.class)))
+            ),
             @ApiResponse(responseCode = "401", description = "Não autorizado"),
             @ApiResponse(responseCode = "404", description = "Pedido não encontrado")
     })
@@ -122,14 +149,18 @@ public class OrderProxyController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Adicionar item ao pedido", description = "Adiciona um novo item ao pedido especificado")
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Adicionado com sucesso"),
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Adicionado com sucesso",
+                    content = @Content(schema = @Schema(implementation = OrderItemDTO.class))
+            ),
             @ApiResponse(responseCode = "400", description = "Erro de validação"),
             @ApiResponse(responseCode = "401", description = "Não autorizado"),
             @ApiResponse(responseCode = "404", description = "Pedido não encontrado")
     })
     public Mono<ResponseEntity<byte[]>> addItem(
             @Parameter(description = "ID do pedido") @PathVariable UUID orderId,
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Dados do item") @RequestBody OrderItemDTO dto,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Dados do item") @Valid @RequestBody OrderItemDTO dto,
             HttpServletRequest request) {
         return proxy(request, dto, request.getRequestURI(), true);
     }
