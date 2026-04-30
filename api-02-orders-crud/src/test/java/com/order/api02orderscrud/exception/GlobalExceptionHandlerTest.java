@@ -1,8 +1,11 @@
 package com.order.api02orderscrud.exception;
 
 import com.order.api02orderscrud.dto.OrderDTO;
+import com.order.api02orderscrud.entity.Order;
 import com.order.api02orderscrud.entity.OrderStatus;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.mapping.PropertyReferenceException;
+import org.springframework.data.util.TypeInformation;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,6 +58,16 @@ class GlobalExceptionHandlerTest {
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         assertEquals("Unexpected", response.getBody());
+    }
+
+    @Test
+    void shouldMapPropertyReferenceExceptionTo400() {
+        PropertyReferenceException ex = new PropertyReferenceException("[\"string\"]", TypeInformation.of(Order.class), java.util.Collections.emptyList());
+
+        ResponseEntity<String> response = handler.handlePropertyReferenceException(ex);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(ex.getMessage(), response.getBody());
     }
 
     static class TestTarget {

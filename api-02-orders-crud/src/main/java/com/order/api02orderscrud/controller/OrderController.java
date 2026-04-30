@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springdoc.core.annotations.ParameterObject;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -32,7 +33,7 @@ public class OrderController {
             @ApiResponse(responseCode = "200", description = "Sucesso"),
             @ApiResponse(responseCode = "401", description = "Não autorizado")
     })
-    public Page<OrderDTO> findAll(Pageable pageable) {
+    public Page<OrderDTO> findAll(@ParameterObject Pageable pageable) {
         return orderService.findAll(pageable);
     }
 
