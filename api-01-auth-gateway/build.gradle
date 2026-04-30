@@ -1,6 +1,5 @@
 plugins {
     id 'org.asciidoctor.jvm.convert' version '4.0.5'
-    id 'org.graalvm.buildtools.native' version '0.11.5' apply false
 }
 
 description = 'api-01-auth-gateway'
@@ -35,14 +34,4 @@ tasks.named('test') {
 tasks.named('asciidoctor') {
     inputs.dir snippetsDir
     dependsOn test
-}
-
-graalvmNative {
-    binaries {
-        main {
-            mainClass = 'com.order.api01authgateway.Api01AuthGatewayApplication'
-            
-            buildArgs.add('--no-fallback') 
-        }
-    }
 }

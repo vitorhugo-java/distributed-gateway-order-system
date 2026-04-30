@@ -34,6 +34,7 @@ services:
       - APPLICATION_GATEWAY_DOWNSTREAM_URL=http://api-orders:8081
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root
+      - JWT_SECRET=${JWT_SECRET:-404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
     depends_on:
       postgres:
         condition: service_healthy
@@ -51,6 +52,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/ordersystem_orders_db
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root
+      - JWT_SECRET=${JWT_SECRET:-404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
     depends_on:
       postgres:
         condition: service_healthy
