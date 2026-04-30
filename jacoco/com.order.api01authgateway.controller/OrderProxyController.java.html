@@ -110,7 +110,7 @@ public class OrderProxyController {
             @Parameter(description = &quot;ID do pedido&quot;) @PathVariable UUID id,
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = &quot;Dados atualizados do pedido&quot;) @Valid @RequestBody OrderDTO dto,
             HttpServletRequest request) {
-<span class="nc" id="L113">        return proxy(request, dto, request.getRequestURI(), true);</span>
+<span class="fc" id="L113">        return proxy(request, dto, request.getRequestURI(), true);</span>
     }
 
     @DeleteMapping(&quot;/{id}&quot;)
@@ -123,7 +123,7 @@ public class OrderProxyController {
     public Mono&lt;ResponseEntity&lt;byte[]&gt;&gt; delete(
             @Parameter(description = &quot;ID do pedido&quot;) @PathVariable UUID id,
             HttpServletRequest request) {
-<span class="nc" id="L126">        return proxy(request, null, request.getRequestURI(), true);</span>
+<span class="fc" id="L126">        return proxy(request, null, request.getRequestURI(), true);</span>
     }
 
     // ─── Order Items ──────────────────────────────────────────────────────
@@ -142,7 +142,7 @@ public class OrderProxyController {
     public Mono&lt;ResponseEntity&lt;byte[]&gt;&gt; findItemsByOrderId(
             @Parameter(description = &quot;ID do pedido&quot;) @PathVariable UUID orderId,
             HttpServletRequest request) {
-<span class="nc" id="L145">        return proxy(request, null, request.getRequestURI(), true);</span>
+<span class="fc" id="L145">        return proxy(request, null, request.getRequestURI(), true);</span>
     }
 
     @PostMapping(&quot;/{orderId}/items&quot;)
@@ -162,13 +162,13 @@ public class OrderProxyController {
             @Parameter(description = &quot;ID do pedido&quot;) @PathVariable UUID orderId,
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = &quot;Dados do item&quot;) @Valid @RequestBody OrderItemDTO dto,
             HttpServletRequest request) {
-<span class="nc" id="L165">        return proxy(request, dto, request.getRequestURI(), true);</span>
+<span class="fc" id="L165">        return proxy(request, dto, request.getRequestURI(), true);</span>
     }
 
     // ─── Internal proxy helper ────────────────────────────────────────────
 
     private Mono&lt;ResponseEntity&lt;byte[]&gt;&gt; proxy(HttpServletRequest request, Object body) {
-<span class="nc" id="L171">        return proxy(request, body, request.getRequestURI(), true);</span>
+<span class="fc" id="L171">        return proxy(request, body, request.getRequestURI(), true);</span>
     }
 
     private Mono&lt;ResponseEntity&lt;byte[]&gt;&gt; proxy(HttpServletRequest request, Object body, String targetPath, boolean propagateAuthorization) {
@@ -202,8 +202,8 @@ public class OrderProxyController {
         }
 
 <span class="fc" id="L204">        String accept = request.getHeader(HttpHeaders.ACCEPT);</span>
-<span class="pc bpc" id="L205" title="1 of 2 branches missed.">        if (StringUtils.hasText(accept)) {</span>
-<span class="nc" id="L206">            headers.add(HttpHeaders.ACCEPT, accept);</span>
+<span class="fc bfc" id="L205" title="All 2 branches covered.">        if (StringUtils.hasText(accept)) {</span>
+<span class="fc" id="L206">            headers.add(HttpHeaders.ACCEPT, accept);</span>
         }
 
 <span class="fc" id="L209">        return headers;</span>
